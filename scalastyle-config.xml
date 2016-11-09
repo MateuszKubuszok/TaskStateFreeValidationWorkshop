@@ -15,7 +15,7 @@
  <check level="error" class="org.scalastyle.file.HeaderMatchesChecker" enabled="false"/>
  <check level="error" class="org.scalastyle.file.NewLineAtEofChecker" enabled="true"/>
  <check level="error" class="org.scalastyle.file.NoNewLineAtEofChecker" enabled="false"/>
- <check level="error" class="org.scalastyle.file.RegexChecker" enabled="true">
+ <check level="error" class="org.scalastyle.file.RegexChecker" enabled="false">
   <parameters>
    <parameter name="regex"><![CDATA[println]]></parameter>
   </parameters>
