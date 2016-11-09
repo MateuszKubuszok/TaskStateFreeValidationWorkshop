@@ -20,6 +20,7 @@ lazy val warmup = project.from("warmup")
   .setDescription("Warmup: implicits, typeclasses and monads")
   .setInitialCommand("warmup._")
   .configureModule
+  .dependsOn(common)
   .settings(mainClass in (Compile, run) := Some("io.scalawave.workshop.warmup.Main"))
 
 lazy val task = project.from("task")
@@ -27,6 +28,7 @@ lazy val task = project.from("task")
   .setDescription("Task monad excerices")
   .setInitialCommand("task._")
   .configureModule
+  .dependsOn(common)
   .settings(mainClass in (Compile, run) := Some("io.scalawave.workshop.task.Main"))
 
 lazy val state = project.from("state")
@@ -34,6 +36,7 @@ lazy val state = project.from("state")
   .setDescription("State monad excercies")
   .setInitialCommand("state._")
   .configureModule
+  .dependsOn(common)
   .settings(mainClass in (Compile, run) := Some("io.scalawave.workshop.state.Main"))
 
 lazy val free = project.from("free")
@@ -41,6 +44,7 @@ lazy val free = project.from("free")
   .setDescription("Free monad excercies")
   .setInitialCommand("free._")
   .configureModule
+  .dependsOn(common)
   .settings(mainClass in (Compile, run) := Some("io.scalawave.workshop.free.Main"))
 
 lazy val validation = project.from("validation")
@@ -48,4 +52,5 @@ lazy val validation = project.from("validation")
   .setDescription("Validation monad excercies")
   .setInitialCommand("validation._")
   .configureModule
+  .dependsOn(common)
   .settings(mainClass in (Compile, run) := Some("io.scalawave.workshop.validation.Main"))
