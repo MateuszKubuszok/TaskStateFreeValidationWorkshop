@@ -19,7 +19,7 @@ object Main extends Logging {
   def testScalaz: Config = {
     logger info "Enter accuracy:"
     val accuracy = scala.io.StdIn.readLine
-    logger info "Enter dataSource:"
+    logger info "Enter data source:"
     val dataSource = scala.io.StdIn.readLine
     ScalazValidation.parse(accuracy, dataSource) match {
       case scalaz.Failure(errors) =>
@@ -33,7 +33,7 @@ object Main extends Logging {
   def testCats: Config = {
     logger info "Enter accuracy:"
     val accuracy = scala.io.StdIn.readLine
-    logger info "Enter dataSource:"
+    logger info "Enter data source:"
     val dataSource = scala.io.StdIn.readLine
     CatsValidation.parse(accuracy, dataSource) match {
       case cats.data.Validated.Invalid(errors) =>

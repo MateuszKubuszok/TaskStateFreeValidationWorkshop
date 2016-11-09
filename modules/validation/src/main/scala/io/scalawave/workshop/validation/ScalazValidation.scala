@@ -14,7 +14,7 @@ object ScalazValidation {
       .toValidationNel
 
   def parseDataSource(dataSource: String): ValidationNel[ConfigError, DataSource] =
-    Validation.fromTryCatchNonFatal { DataSource.withName(dataSource) }
+    Validation.fromTryCatchNonFatal { DataSource.withName(dataSource.toLowerCase) }
       .leftMap { _ => InvalidDataSource(dataSource) }
       .toValidationNel
 

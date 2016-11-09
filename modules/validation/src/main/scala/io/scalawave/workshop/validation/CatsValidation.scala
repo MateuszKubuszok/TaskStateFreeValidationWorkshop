@@ -13,7 +13,7 @@ object CatsValidation {
       .toValidatedNel
 
   def parseDataSource(dataSource: String): ValidatedNel[ConfigError, DataSource] =
-    Validated.catchNonFatal { DataSource.withName(dataSource) }
+    Validated.catchNonFatal { DataSource.withName(dataSource.toLowerCase) }
       .leftMap { _ => InvalidDataSource(dataSource) }
       .toValidatedNel
 
