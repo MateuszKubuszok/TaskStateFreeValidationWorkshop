@@ -20,7 +20,7 @@ object Main {
     val accuracy = scala.io.StdIn.readLine
     println("Enter data source: ")
     val dataSource = scala.io.StdIn.readLine
-    ScalazValidation.parse(accuracy, dataSource) match {
+    ScalazValidation.parseConfig(accuracy, dataSource) match {
       case scalaz.Failure(errors) =>
         errors.foreach { error => println(error) }
         testScalaz
@@ -34,7 +34,7 @@ object Main {
     val accuracy = scala.io.StdIn.readLine
     println("Enter data source: ")
     val dataSource = scala.io.StdIn.readLine
-    CatsValidation.parse(accuracy, dataSource) match {
+    CatsValidation.parseConfig(accuracy, dataSource) match {
       case cats.data.Validated.Invalid(errors) =>
         errors.toList.foreach { error => println(error) }
         testCats

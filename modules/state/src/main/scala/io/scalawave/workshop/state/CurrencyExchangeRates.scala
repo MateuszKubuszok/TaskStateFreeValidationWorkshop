@@ -1,15 +1,7 @@
 package io.scalawave.workshop.state
 
-import io.scalawave.workshop.state.Currency.Currency
-
-object Currency extends Enumeration {
-  type Currency = Value
-  val USD = Value("usd")
-  val EUR = Value("eur")
-  val GBP = Value("gbp")
-  val CAD = Value("cad")
-  val AUD = Value("aud")
-}
+import io.scalawave.workshop.common.Currency
+import Currency.Currency
 
 case class CurrencyExchangeRates(dollarExchangeRates: Map[Currency, Double] = Map.empty) {
 

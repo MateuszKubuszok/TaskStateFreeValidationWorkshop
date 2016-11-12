@@ -1,7 +1,8 @@
 package io.scalawave.workshop.state
 
 import cats.data.State
-import io.scalawave.workshop.state.Currency.Currency
+import io.scalawave.workshop.common.Currency
+import Currency.Currency
 
 object CatsState {
 

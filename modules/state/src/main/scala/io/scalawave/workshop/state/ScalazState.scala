@@ -1,6 +1,7 @@
 package io.scalawave.workshop.state
 
-import io.scalawave.workshop.state.Currency.Currency
+import io.scalawave.workshop.common.Currency
+import Currency.Currency
 
 import scalaz._
 

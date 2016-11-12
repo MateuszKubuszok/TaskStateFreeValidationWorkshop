@@ -1,5 +1,6 @@
 package io.scalawave.workshop.state
 
+import io.scalawave.workshop.common.Currency
 import org.specs2.mutable.Specification
 
 class CatsStateSpec extends Specification {

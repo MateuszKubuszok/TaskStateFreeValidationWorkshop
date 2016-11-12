@@ -19,13 +19,9 @@ object Dependencies {
   // cats
   val cats = "org.typelevel" %% "cats" % "0.7.2"
 
-  // logging
-  val logback = "ch.qos.logback" % "logback-classic" % "1.1.7"
-
   // testing
   val spec2Core  = "org.specs2" %% "specs2-core" % "3.8.5.1"
   val spec2JUnit = "org.specs2" %% "specs2-junit" % "3.8.5.1"
-  val spec2Mock = "org.specs2" %% "specs2-mock" % "3.8.5.1"
 }
 
 trait Dependencies {
@@ -35,9 +31,9 @@ trait Dependencies {
   // resolvers
   val commonResolvers = resolvers
 
-  val mainDeps = Seq(scalaz, scalazConcurrent, cats, logback)
+  val mainDeps = Seq(scalaz, scalazConcurrent, cats)
 
-  val testDeps = Seq(spec2Core, spec2JUnit, spec2Mock)
+  val testDeps = Seq(spec2Core, spec2JUnit)
 
   implicit class ProjectRoot(project: Project) {
 

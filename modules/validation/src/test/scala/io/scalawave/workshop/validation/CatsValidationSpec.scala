@@ -1,15 +1,14 @@
 package io.scalawave.workshop.validation
 
+import cats.data.Validated
+import Validated._
 import io.scalawave.workshop.common._
 import ActionType.ActionType
 import Currency.Currency
 import DataSource.DataSource
 import org.specs2.mutable.Specification
 
-import scalaz._
-import Scalaz._
-
-class ScalaValidationSpec extends Specification {
+class CatsValidationSpec extends Specification {
 
   val expectedDouble = 12.0
   val expectedNatural = 12
@@ -20,7 +19,7 @@ class ScalaValidationSpec extends Specification {
 
   "double validation" should {
 
-    import ScalazValidation.parseDouble
+    import CatsValidation.parseDouble
 
     "accept positive number" in {
       // given
@@ -30,7 +29,7 @@ class ScalaValidationSpec extends Specification {
       val result = parseDouble(number)
 
       // then
-      result shouldEqual expectedDouble.success[ParsingError]
+      result shouldEqual valid[ParsingError, Double](expectedDouble)
     }
 
     "accept 0" in {
@@ -41,7 +40,7 @@ class ScalaValidationSpec extends Specification {
       val result = parseDouble(number)
 
       // then
-      result shouldEqual 0.0.success[ParsingError]
+      result shouldEqual valid[ParsingError, Double](0.0)
     }
 
     "accept number wrapped in whitespaces" in {
@@ -52,7 +51,7 @@ class ScalaValidationSpec extends Specification {
       val result = parseDouble(number)
 
       // then
-      result shouldEqual 0.0.success[ParsingError]
+      result shouldEqual valid[ParsingError, Double](0.0)
     }
 
     "accept negative number" in {
@@ -63,7 +62,7 @@ class ScalaValidationSpec extends Specification {
       val result = parseDouble(number)
 
       // then
-      result shouldEqual (-expectedDouble).success[ParsingError]
+      result shouldEqual valid[ParsingError, Double](-expectedDouble)
     }
 
     "reject invalid number" in {
@@ -74,13 +73,13 @@ class ScalaValidationSpec extends Specification {
       val result = parseDouble(number)
 
       // then
-      result shouldEqual NotANumber(number).failureNel[Int]
+      result shouldEqual invalidNel[ParsingError, Double](NotANumber(number))
     }
   }
 
   "natural validation" should {
 
-    import ScalazValidation.parseNatural
+    import CatsValidation.parseNatural
 
     "accept positive number" in {
       // given
@@ -90,7 +89,7 @@ class ScalaValidationSpec extends Specification {
       val result = parseNatural(number)
 
       // then
-      result shouldEqual expectedNatural.success[ParsingError]
+      result shouldEqual valid[ParsingError, Int](expectedNatural)
     }
 
     "accept 0" in {
@@ -101,7 +100,7 @@ class ScalaValidationSpec extends Specification {
       val result = parseNatural(number)
 
       // then
-      result shouldEqual 0.success[ParsingError]
+      result shouldEqual valid[ParsingError, Int](0)
     }
 
     "accept number wrapped in whitespaces" in {
@@ -112,7 +111,7 @@ class ScalaValidationSpec extends Specification {
       val result = parseNatural(number)
 
       // then
-      result shouldEqual 0.success[ParsingError]
+      result shouldEqual valid[ParsingError, Int](0)
     }
 
     "reject negative number" in {
@@ -123,7 +122,7 @@ class ScalaValidationSpec extends Specification {
       val result = parseNatural(number)
 
       // then
-      result shouldEqual NotNatural(number).failureNel[Int]
+      result shouldEqual invalidNel[ParsingError, Int](NotNatural(number))
     }
 
     "reject invalid number" in {
@@ -134,13 +133,13 @@ class ScalaValidationSpec extends Specification {
       val result = parseNatural(number)
 
       // then
-      result shouldEqual NotANumber(number).failureNel[Int]
+      result shouldEqual invalidNel[ParsingError, Int](NotANumber(number))
     }
   }
 
   "action type validation" should {
 
-    import ScalazValidation.parseActionType
+    import CatsValidation.parseActionType
 
     "accept valid action type" in {
       // given
@@ -150,7 +149,7 @@ class ScalaValidationSpec extends Specification {
       val result = parseActionType(actionType)
 
       // then
-      result shouldEqual expectedActionType.success[ParsingError]
+      result shouldEqual valid[ParsingError, ActionType](expectedActionType)
     }
 
     "accept valid acton type with different cases" in {
@@ -161,7 +160,7 @@ class ScalaValidationSpec extends Specification {
       val result = parseActionType(actionType)
 
       // then
-      result shouldEqual expectedActionType.success[ParsingError]
+      result shouldEqual valid[ParsingError, ActionType](expectedActionType)
     }
 
     "accept valid acton type wrapped in whitespaces" in {
@@ -172,7 +171,7 @@ class ScalaValidationSpec extends Specification {
       val result = parseActionType(actionType)
 
       // then
-      result shouldEqual expectedActionType.success[ParsingError]
+      result shouldEqual valid[ParsingError, ActionType](expectedActionType)
     }
 
     "reject invalid action type" in {
@@ -183,13 +182,13 @@ class ScalaValidationSpec extends Specification {
       val result = parseActionType(actionType)
 
       // then
-      result shouldEqual InvalidActionType(actionType).failureNel[ActionType]
+      result shouldEqual invalidNel[ParsingError, ActionType](InvalidActionType(actionType))
     }
   }
 
   "currency validation" should {
 
-    import ScalazValidation.parseCurrency
+    import CatsValidation.parseCurrency
 
     "accept valid currency" in {
       // given
@@ -199,7 +198,7 @@ class ScalaValidationSpec extends Specification {
       val result = parseCurrency(currency)
 
       // then
-      result shouldEqual expectedCurrency.success[ParsingError]
+      result shouldEqual valid[ParsingError, Currency](expectedCurrency)
     }
 
     "accept valid currency with different cases" in {
@@ -210,7 +209,7 @@ class ScalaValidationSpec extends Specification {
       val result = parseCurrency(currency)
 
       // then
-      result shouldEqual expectedCurrency.success[ParsingError]
+      result shouldEqual valid[ParsingError, Currency](expectedCurrency)
     }
 
     "accept valid currency wrapped in whitespaces" in {
@@ -221,7 +220,7 @@ class ScalaValidationSpec extends Specification {
       val result = parseCurrency(currency)
 
       // then
-      result shouldEqual expectedCurrency.success[ParsingError]
+      result shouldEqual valid[ParsingError, Currency](expectedCurrency)
     }
 
     "reject invalid currency" in {
@@ -232,13 +231,13 @@ class ScalaValidationSpec extends Specification {
       val result = parseCurrency(currency)
 
       // then
-      result shouldEqual InvalidCurrency(currency).failureNel[Currency]
+      result shouldEqual invalidNel[ParsingError, Currency](InvalidCurrency(currency))
     }
   }
 
   "data source validation" should {
 
-    import ScalazValidation.parseDataSource
+    import CatsValidation.parseDataSource
 
     "accept valid data source" in {
       // given
@@ -248,7 +247,7 @@ class ScalaValidationSpec extends Specification {
       val result = parseDataSource(dataSource)
 
       // then
-      result shouldEqual expectedDataSource.success[ParsingError]
+      result shouldEqual valid[ParsingError, DataSource](expectedDataSource)
     }
 
     "accept valid data source with different cases" in {
@@ -259,7 +258,7 @@ class ScalaValidationSpec extends Specification {
       val result = parseDataSource(dataSource)
 
       // then
-      result shouldEqual expectedDataSource.success[ParsingError]
+      result shouldEqual valid[ParsingError, DataSource](expectedDataSource)
     }
 
     "accept valid data source wrapped in whitespaces" in {
@@ -270,7 +269,7 @@ class ScalaValidationSpec extends Specification {
       val result = parseDataSource(dataSource)
 
       // then
-      result shouldEqual expectedDataSource.success[ParsingError]
+      result shouldEqual valid[ParsingError, DataSource](expectedDataSource)
     }
 
     "reject invalid data source" in {
@@ -281,13 +280,13 @@ class ScalaValidationSpec extends Specification {
       val result = parseDataSource(dataSource)
 
       // then
-      result shouldEqual InvalidDataSource(dataSource).failureNel[DataSource]
+      result shouldEqual invalidNel[ParsingError, DataSource](InvalidDataSource(dataSource))
     }
   }
 
   "config validation" should {
 
-    import ScalazValidation.parseConfig
+    import CatsValidation.parseConfig
 
     "accept all valid params" in {
       // given
@@ -298,7 +297,7 @@ class ScalaValidationSpec extends Specification {
       val result = parseConfig(number, dataSource)
 
       // then
-      result shouldEqual expectedConfig.success[ParsingError]
+      result shouldEqual valid[ParsingError, Config](expectedConfig)
     }
 
     "reject invalid number" in {
@@ -310,7 +309,7 @@ class ScalaValidationSpec extends Specification {
       val result = parseConfig(number, dataSource)
 
       // then
-      result shouldEqual NotNatural(number).failureNel[Config]
+      result shouldEqual invalidNel[ParsingError, Config](NotNatural(number))
     }
 
     "reject invalid datasource" in {
@@ -322,7 +321,7 @@ class ScalaValidationSpec extends Specification {
       val result = parseConfig(number, dataSource)
 
       // then
-      result shouldEqual InvalidDataSource(dataSource).failureNel[Config]
+      result shouldEqual invalidNel[ParsingError, Config](InvalidDataSource(dataSource))
     }
   }
 }
