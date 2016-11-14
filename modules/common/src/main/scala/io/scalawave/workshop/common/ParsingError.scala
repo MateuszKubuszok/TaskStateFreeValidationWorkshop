@@ -1,6 +1,4 @@
-package io.scalawave.workshop.validation
-
-import io.scalawave.workshop.common._
+package io.scalawave.workshop.common
 
 sealed trait ParsingError
 

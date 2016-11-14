@@ -1,4 +1,4 @@
-package io.scalawave.workshop.validation
+package io.scalawave.workshop.common
 
 import io.scalawave.workshop.common.DataSource.DataSource
 

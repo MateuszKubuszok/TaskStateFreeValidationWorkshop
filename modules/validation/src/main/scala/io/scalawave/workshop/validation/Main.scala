@@ -1,5 +1,7 @@
 package io.scalawave.workshop.validation
 
+import io.scalawave.workshop.common.Config
+
 import scala.annotation.tailrec
 
 object Main {
