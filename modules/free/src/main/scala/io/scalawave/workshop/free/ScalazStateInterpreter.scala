@@ -2,6 +2,7 @@ package io.scalawave.workshop.free
 
 import io.scalawave.workshop.common.ActionType.ActionType
 import io.scalawave.workshop.common.Currency.Currency
+import io.scalawave.workshop.common.DataSource.DataSource
 import io.scalawave.workshop.common.{ Config, ParsingError, ScalazConfigState }
 
 import scala.annotation.tailrec
@@ -55,7 +56,8 @@ final class ScalazCalculationStateInterpreter(
     readLine:      () => String,
     writeLine:     String => Unit,
     parseCurrency: String => ValidationNel[ParsingError, Currency],
-    parseDouble:   String => ValidationNel[ParsingError, Double]
+    parseDouble:   String => ValidationNel[ParsingError, Double],
+    currencyQuery: Map[DataSource, Currency => Double]
 ) extends (ScalazCalculation ~> ScalazConfigState) {
 
   import ScalazCalculation._
@@ -93,7 +95,12 @@ final class ScalazCalculationStateInterpreter(
     }
   }
 
-  private def convert(config: Config, from: Currency, to: Currency, amount: Double): Double = ???
+  private def convert(config: Config, from: Currency, to: Currency, amount: Double): Double = {
+    val dollarToX = currencyQuery(config.dataSource)(from)
+    val xToDollar = 1.0 / dollarToX
+    val dollarToY = currencyQuery(config.dataSource)(to)
+    xToDollar * dollarToY * amount
+  }
 
   private def displayValue(value: Double): Unit = writeLine(s"Result: $value")
 }
