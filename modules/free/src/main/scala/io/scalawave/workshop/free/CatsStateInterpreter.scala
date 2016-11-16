@@ -68,7 +68,7 @@ final class CatsCalculationStateInterpreter(
     case GetCurrency(question)     => State.pure[Config, Currency](getCurrency(question))
     case GetAmount(question)       => State.pure[Config, Double](getAmount(question))
     case Convert(from, to, amount) => State.inspect[Config, Double](convert(_, from, to, amount))
-    case DisplayValue(value)       => State.pure[Config, Unit](displayValue(value))
+    case DisplayValue(value)       => State.inspect[Config, Unit](displayValue(_, value))
   }
 
   @tailrec
@@ -104,5 +104,5 @@ final class CatsCalculationStateInterpreter(
     xToDollar * dollarToY * amount
   }
 
-  private def displayValue(value: Double): Unit = writeLine(s"Result: $value")
+  private def displayValue(conf: Config, value: Double): Unit = writeLine(s"Result: %.${conf.accuracy}f" format value)
 }

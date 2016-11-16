@@ -69,7 +69,7 @@ final class ScalazCalculationIdInterpreter(
     case GetCurrency(question)     => getCurrency(question)
     case GetAmount(question)       => getAmount(question)
     case Convert(from, to, amount) => convert(configStore.config, from, to, amount)
-    case DisplayValue(value)       => displayValue(value)
+    case DisplayValue(value)       => displayValue(configStore.config, value)
   }
 
   @tailrec
@@ -105,5 +105,5 @@ final class ScalazCalculationIdInterpreter(
     xToDollar * dollarToY * amount
   }
 
-  private def displayValue(value: Double): Unit = writeLine(s"Result: $value")
+  private def displayValue(conf: Config, value: Double): Unit = writeLine(s"Result: %.${conf.accuracy}f" format value)
 }

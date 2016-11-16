@@ -66,7 +66,7 @@ final class ScalazCalculationStateInterpreter(
     case GetCurrency(question)     => State.state[Config, Currency](getCurrency(question))
     case GetAmount(question)       => State.state[Config, Double](getAmount(question))
     case Convert(from, to, amount) => State.gets[Config, Double](convert(_, from, to, amount))
-    case DisplayValue(value)       => State.state[Config, Unit](displayValue(value))
+    case DisplayValue(value)       => State.gets[Config, Unit](displayValue(_, value))
   }
 
   @tailrec
@@ -102,5 +102,5 @@ final class ScalazCalculationStateInterpreter(
     xToDollar * dollarToY * amount
   }
 
-  private def displayValue(value: Double): Unit = writeLine(s"Result: $value")
+  private def displayValue(conf: Config, value: Double): Unit = writeLine(s"Result: %.${conf.accuracy}f" format value)
 }
