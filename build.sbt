@@ -56,8 +56,8 @@ lazy val task = project.from("task")
   .settings(mainClass in (Compile, run) := Some("io.scalawave.workshop.task.Main"))
 
 lazy val summary = project.from("summary")
-  .setName("workshop-final")
+  .setName("workshop-summary")
   .setDescription("Demo of a complete program")
   .setInitialCommand("summary._")
   .configureModule
-  .dependsOn(common, validation, state, free)
+  .dependsOn(common, validation, state, free, task)

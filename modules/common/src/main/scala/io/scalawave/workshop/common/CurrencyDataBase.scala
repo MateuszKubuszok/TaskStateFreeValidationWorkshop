@@ -4,6 +4,8 @@ import io.scalawave.workshop.common.Currency._
 
 object CurrencyDataBase {
 
+  case object DBError extends Exception
+
   private val values = Map(
     EUR -> 0.93,
     GBP -> 0.80,

@@ -1,9 +1,10 @@
 package io.scalawave.workshop.summary
 
-import io.scalawave.workshop.common.{CurrencyOnlineService, CurrencyDataBase, Config}
-import io.scalawave.workshop.common.DataSource._
+import io.scalawave.workshop.common.Config
 import io.scalawave.workshop.common.Currency._
+import io.scalawave.workshop.common.DataSource._
 import io.scalawave.workshop.free.{CatsCalculationStateInterpreter, CatsCommandStateInterpreter, CatsProgram}
+import io.scalawave.workshop.task.{CurrencyOnlineServiceHandler, CurrencyDataBaseHandler}
 import io.scalawave.workshop.validation.CatsValidation._
 
 object CatsMain {
@@ -11,8 +12,8 @@ object CatsMain {
   val program = CatsProgram.program
 
   val dataSources = Map[DataSource, Currency => Double](
-    DataBase -> CurrencyDataBase.query,
-    Internet -> CurrencyOnlineService.query
+    DataBase -> CurrencyDataBaseHandler,
+    Internet -> CurrencyOnlineServiceHandler
   )
 
   val interpreter = {
