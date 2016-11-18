@@ -8,7 +8,7 @@ lazy val root = project.root
   .setDescription("Task, State, Free, Validation workshop")
   .setInitialCommand("_")
   .configureRoot
-  .aggregate(common, warmup, task, state, free, validation)
+  .aggregate(common, warmup, validation, state, free, task)
 
 lazy val common = project.from("common")
   .setName("workshop-common")
@@ -23,17 +23,17 @@ lazy val warmup = project.from("warmup")
   .dependsOn(common)
   .settings(mainClass in (Compile, run) := Some("io.scalawave.workshop.warmup.Main"))
 
-lazy val task = project.from("task")
-  .setName("workshop-task")
-  .setDescription("Task monad excerices")
-  .setInitialCommand("task._")
+lazy val validation = project.from("validation")
+  .setName("workshop-validation")
+  .setDescription("Validation monad exercises")
+  .setInitialCommand("validation._")
   .configureModule
   .dependsOn(common)
-  .settings(mainClass in (Compile, run) := Some("io.scalawave.workshop.task.Main"))
+  .settings(mainClass in (Compile, run) := Some("io.scalawave.workshop.validation.Main"))
 
 lazy val state = project.from("state")
   .setName("workshop-state")
-  .setDescription("State monad excercies")
+  .setDescription("State monad exercises")
   .setInitialCommand("state._")
   .configureModule
   .dependsOn(common)
@@ -41,16 +41,23 @@ lazy val state = project.from("state")
 
 lazy val free = project.from("free")
   .setName("workshop-free")
-  .setDescription("Free monad excercies")
+  .setDescription("Free monad exercises")
   .setInitialCommand("free._")
   .configureModule
   .dependsOn(common)
   .settings(mainClass in (Compile, run) := Some("io.scalawave.workshop.free.Main"))
 
-lazy val validation = project.from("validation")
-  .setName("workshop-validation")
-  .setDescription("Validation monad excercies")
-  .setInitialCommand("validation._")
+lazy val task = project.from("task")
+  .setName("workshop-task")
+  .setDescription("Task monad exercises")
+  .setInitialCommand("task._")
   .configureModule
   .dependsOn(common)
-  .settings(mainClass in (Compile, run) := Some("io.scalawave.workshop.validation.Main"))
+  .settings(mainClass in (Compile, run) := Some("io.scalawave.workshop.task.Main"))
+
+lazy val summary = project.from("summary")
+  .setName("workshop-final")
+  .setDescription("Demo of a complete program")
+  .setInitialCommand("summary._")
+  .configureModule
+  .dependsOn(common, validation, state, free)
