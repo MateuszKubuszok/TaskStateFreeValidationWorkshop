@@ -13,7 +13,7 @@ final class ScalazCommandIdInterpreter(
     readLine:        () => String,
     writeLine:       String => Unit,
     parseActionType: String => ValidationNel[ParsingError, ActionType],
-    parseConfig:     String => ValidationNel[ParsingError, Config],
+    parseConfig:     (String, String) => ValidationNel[ParsingError, Config],
     configStore:     ConfigStore
 ) extends (ScalazCommand ~> Id) {
 
@@ -41,7 +41,7 @@ final class ScalazCommandIdInterpreter(
   @tailrec
   private def configure(question: String): Config = {
     writeLine(question)
-    parseConfig(readLine()) match {
+    parseConfig(readLine(), readLine()) match {
       case Success(value) => value
       case Failure(errors) =>
         writeLine("Errors:")

@@ -14,7 +14,7 @@ final class CatsCommandStateInterpreter(
     readLine:        () => String,
     writeLine:       String => Unit,
     parseActionType: String => ValidatedNel[ParsingError, ActionType],
-    parseConfig:     String => ValidatedNel[ParsingError, Config]
+    parseConfig:     (String, String) => ValidatedNel[ParsingError, Config]
 ) extends (CatsCommand ~> CatsConfigState) {
 
   import CatsCommand._
@@ -41,7 +41,7 @@ final class CatsCommandStateInterpreter(
   @tailrec
   private def configure(question: String): Config = {
     writeLine(question)
-    parseConfig(readLine()) match {
+    parseConfig(readLine(), readLine()) match {
       case Valid(value) => value
       case Invalid(errors) =>
         writeLine("Errors:")
