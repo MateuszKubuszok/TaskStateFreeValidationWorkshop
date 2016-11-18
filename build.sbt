@@ -8,7 +8,7 @@ lazy val root = project.root
   .setDescription("Task, State, Free, Validation workshop")
   .setInitialCommand("_")
   .configureRoot
-  .aggregate(common, warmup, validation, state, free, task)
+  .aggregate(common, warmup, validation, state, free, task, summaryCats, summaryScalaz)
 
 lazy val common = project.from("common")
   .setName("workshop-common")
@@ -55,9 +55,18 @@ lazy val task = project.from("task")
   .dependsOn(common)
   .settings(mainClass in (Compile, run) := Some("io.scalawave.workshop.task.Main"))
 
-lazy val summary = project.from("summary")
-  .setName("workshop-summary")
-  .setDescription("Demo of a complete program")
+lazy val summaryCats = project.from("summary-cats")
+  .setName("workshop-summary-cats")
+  .setDescription("Demo of a complete Cats program")
   .setInitialCommand("summary._")
   .configureModule
   .dependsOn(common, validation, state, free, task)
+  .settings(mainClass in (Compile, run) := Some("io.scalawave.workshop.summary.CatsMain"))
+
+lazy val summaryScalaz = project.from("summary-scalaz")
+  .setName("workshop-summary-scalaz")
+  .setDescription("Demo of a complete Scalaz program")
+  .setInitialCommand("summary._")
+  .configureModule
+  .dependsOn(common, validation, state, free, task)
+  .settings(mainClass in (Compile, run) := Some("io.scalawave.workshop.summary.ScalazMain"))
