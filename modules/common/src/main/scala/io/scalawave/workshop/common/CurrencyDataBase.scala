@@ -2,6 +2,8 @@ package io.scalawave.workshop.common
 
 import io.scalawave.workshop.common.Currency._
 
+import scala.util.Random
+
 object CurrencyDataBase {
 
   case object DBError extends Exception
@@ -15,8 +17,11 @@ object CurrencyDataBase {
 
   private val dbDelay = 150
 
+  private val errorRatio = 0.20
+
   def query(currency: Currency): Double = {
     synchronized(wait(dbDelay))
-    values(currency)
+    if (Random.nextDouble < errorRatio) throw DBError
+    else values(currency)
   }
 }

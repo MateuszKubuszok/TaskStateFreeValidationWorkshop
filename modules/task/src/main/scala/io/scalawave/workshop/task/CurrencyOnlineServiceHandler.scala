@@ -2,7 +2,7 @@ package io.scalawave.workshop.task
 
 import io.scalawave.workshop.common.Currency._
 import io.scalawave.workshop.common.CurrencyOnlineService
-import io.scalawave.workshop.common.CurrencyDataBase.DBError
+import io.scalawave.workshop.common.CurrencyOnlineService.ConnectionError
 
 import scalaz.\/
 import scalaz.concurrent.Task
@@ -19,7 +19,7 @@ object CurrencyOnlineServiceHandler extends (Currency => Double) {
   def fetchDataTask(currency: Currency): Task[Double] = {
     val task = Task(CurrencyOnlineService.query(currency))
     task.handleWith {
-      case DBError => fetchDataTask(currency)
+      case ConnectionError => fetchDataTask(currency)
     }
   }
 }

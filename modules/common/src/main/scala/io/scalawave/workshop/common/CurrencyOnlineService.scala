@@ -2,7 +2,11 @@ package io.scalawave.workshop.common
 
 import io.scalawave.workshop.common.Currency._
 
+import scala.util.Random
+
 object CurrencyOnlineService {
+
+  case object ConnectionError extends Exception
 
   private val values = Map(
     EUR -> 0.95,
@@ -13,9 +17,11 @@ object CurrencyOnlineService {
 
   private val connectionDelay = 1000
 
+  private val errorRatio = 0.50
+
   def query(currency: Currency): Double = {
     synchronized(wait(connectionDelay))
-    // add random failures
-    values(currency)
+    if (Random.nextDouble < errorRatio) throw ConnectionError
+    else values(currency)
   }
 }
