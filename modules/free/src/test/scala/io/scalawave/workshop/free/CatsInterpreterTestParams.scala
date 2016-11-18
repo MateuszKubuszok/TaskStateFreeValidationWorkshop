@@ -2,6 +2,7 @@ package io.scalawave.workshop.free
 
 import cats.data.Validated._
 import cats.data.ValidatedNel
+import cats.syntax.cartesian._
 import io.scalawave.workshop.common._
 import io.scalawave.workshop.common.ActionType.ActionType
 import io.scalawave.workshop.common.Currency.Currency
@@ -31,4 +32,10 @@ trait CatsInterpreterTestParams {
 
   protected def simpleDoubleValidation(value: String): ValidatedNel[ParsingError, Double] =
     Try { Valid(value.toDouble) } getOrElse { Invalid(NotANumber(value)) } toValidatedNel
+
+  protected def simpleNumberValidation(value: String): ValidatedNel[ParsingError, Int] =
+    Try { Valid(value.toInt) } getOrElse { Invalid(NotNatural(value)) } toValidatedNel
+
+  protected def simpleConfigValidation(accuracy: String, dataSource: String): ValidatedNel[ParsingError, Config] =
+    (simpleNumberValidation(accuracy) |@| simpleDataTypeValidation(dataSource)) map { Config }
 }

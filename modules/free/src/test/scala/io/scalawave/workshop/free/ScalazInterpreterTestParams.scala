@@ -42,4 +42,13 @@ trait ScalazInterpreterTestParams {
   } getOrElse {
     (NotANumber(value): ParsingError).failureNel
   }
+
+  protected def simpleNumberValidation(value: String): ValidationNel[ParsingError, Int] = Try {
+    value.toInt.successNel[ParsingError]
+  } getOrElse {
+    (NotNatural(value): ParsingError).failureNel
+  }
+
+  protected def simpleConfigValidation(accuracy: String, dataSource: String): ValidationNel[ParsingError, Config] =
+    (simpleNumberValidation(accuracy) |@| simpleDataTypeValidation(dataSource)) { Config }
 }
