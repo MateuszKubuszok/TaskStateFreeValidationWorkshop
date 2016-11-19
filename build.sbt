@@ -8,7 +8,7 @@ lazy val root = project.root
   .setDescription("Task, State, Free, Validation workshop")
   .setInitialCommand("_")
   .configureRoot
-  .aggregate(common, validation, state, free, task, summaryCats, summaryScalaz)
+  .aggregate(common, validation, state, free, task, `summary-cats`, `summary-scalaz`)
 
 lazy val common = project.from("common")
   .setName("workshop-common")
@@ -47,7 +47,7 @@ lazy val task = project.from("task")
   .dependsOn(common)
   .settings(mainClass in (Compile, run) := Some("io.scalawave.workshop.task.Main"))
 
-lazy val summaryCats = project.from("summary-cats")
+lazy val `summary-cats` = project.from("summary-cats")
   .setName("workshop-summary-cats")
   .setDescription("Demo of a complete Cats program")
   .setInitialCommand("summary._")
@@ -55,7 +55,7 @@ lazy val summaryCats = project.from("summary-cats")
   .dependsOn(common, validation, state, free, task)
   .settings(mainClass in (Compile, run) := Some("io.scalawave.workshop.summary.CatsMain"))
 
-lazy val summaryScalaz = project.from("summary-scalaz")
+lazy val `summary-scalaz` = project.from("summary-scalaz")
   .setName("workshop-summary-scalaz")
   .setDescription("Demo of a complete Scalaz program")
   .setInitialCommand("summary._")
