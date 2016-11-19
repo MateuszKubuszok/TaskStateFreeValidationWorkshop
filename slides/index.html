@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="css/theme/scalawave.css">
 
     <!-- Theme used for syntax highlighting of code -->
-    <link rel="stylesheet" href="lib/css/zenburn.css">
+    <link rel="stylesheet" href="lib/css/mono-blue.css">
 
     <!-- Printing and PDF exports -->
     <script>
@@ -29,11 +29,81 @@
           <br />
           <p><a href="http://kubuszok.pl">Mateusz Kubuszok</a> <b>&gt;</b> <a href="http://scalawave.io">ScalaWave 2016</a></p>
         </section>
-        <section><h1>Workshops</h1></section>
-        <section><h2>Workshops</h2><section></section>
-          <section>The plan: Validation -> Task -> State -> Free -> app build with them</section>
-          <section>Cats vs Scalaz</section>
-          <section>Concepts we'd better know: monads, implicits, typeclasses</section>
+        <section><h1>Workshop</h1></section>
+        <section><h2>Workshop</h2><section></section>
+          <section>
+            <h3>The plan</h3>
+            <ul>
+              <li class="fragment">Basic concepts</li>
+              <li class="fragment">Validation</li>
+              <li class="fragment">Task</li>
+              <li class="fragment">State</li>
+              <li class="fragment">Free</li>
+              <li class="fragment">example application build with implemented components</li>
+            </ul>
+          </section>
+          <section>
+            <h3>Cats vs Scalaz</h3>
+            <ul>
+              <li class="fragment">Cats - more focus on performance, modularity, less mature</li>
+              <li class="fragment">Scalaz - more dogmatic approach, strong opinions among authors</li>
+              <li class="fragment">in the beginning mostly political differences, now API very often differs</li>
+            </ul>
+          </section>
+          <section>
+            <h3>Concepts we'd better know</h3>
+            <ul>
+              <li class="fragment">typeclasses</li>
+              <li class="fragment">monads</li>
+              <li class="fragment">implicits</li>
+            </ul>
+          </section>
+          <section>
+            <h4>3 flavors of polymorphism</h4>
+            <ul>
+              <li class="fragment"><b>subtyping</b>: most often as interface inheritance</li>
+              <li class="fragment"><b>parametric polymorphism</b>: generics, templates, parametrized classes/methods/functions</li>
+              <li class="fragment"><b>ad hoc polymorphism</b>: function/operator overload</li>
+            </ul>
+          </section>
+          <section>
+            <h4>Typeclass</h4>
+            <ul>
+              <li class="fragment">based on ad hoc polymorphism</li>
+              <li class="fragment">puts constraint on a type, by requiring overloading of some functions</li>
+              <li class="fragment">is <b>not</b> a class in OOP sense (<b>!</b>)</li>
+            </ul>
+          </section>
+          <section>
+            <h4>Metaphor of assembly line</h4>
+            <ul>
+              <li class="fragment">having boxes of some sort</li>
+              <li class="fragment">putting things into boxes</li>
+              <li class="fragment">taking things out of the box by one, doing something with them and packing back into boxes of the same kind</li>
+            </ul>
+          </section>
+          <section>
+            <h4>Monad typeclass</h4>
+            <ul>
+              <li class="fragment">type constructor</li>
+              <li class="fragment"><b>unit</b> function (<i>putting things into the box for the first time</i>)<pre><code class="hljs scala">def unit[T]: T => Monad[T]</code></pre></li>
+              <li class="fragment"><b>bind</b> function (<i>taking something out of the box and deciding what to do with it</i>)<pre><code class="hljs scala">def bind[T]: (Monad[T], T => Monad[T]) => Monad[T]</code></pre> in Scala known as <b>flatMap</b>!</li>
+            </ul>
+          </section>
+          <section>
+            <h4>Monadic laws</h4>
+            <ul>
+              <li class="fragment"><b>left identity</b><pre><code class="hljs scala">bind(unit(value), func) == func(value)</code></pre></li>
+              <li class="fragment"><b>right identity</b><pre><code class="hljs scala">bind(mValue, unit) == mValue</code></pre></li>
+              <li class="fragment"><b>associativity</b><pre><code class="hljs scala">bind(bind(mv, f1), f2) == bind(mv, v => bind(f1(v), f2))</code></pre></li>
+            </ul>
+          </section>
+          <section>
+            <h3>Implicits</h3>
+            <ul>
+              <li class="fragment"></li>
+            </ul>
+          </section>
         </section>
         <section><h1>Validation</h1></section>
         <section><h2>Validation</h2><section></section>
