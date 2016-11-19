@@ -4,6 +4,12 @@ import io.scalawave.workshop.common.Config
 
 import scala.annotation.tailrec
 
+/** Validation demo
+  *
+  * You can use this main function for checking how your validation functions would work in action.
+  *
+  * Still, if you want to have it properly tested make use of provided tests.
+  */
 object Main {
 
   def main(args: Array[String]): Unit = {
