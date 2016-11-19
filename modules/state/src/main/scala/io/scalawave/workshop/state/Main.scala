@@ -5,15 +5,16 @@ import Currency.Currency
 
 import scala.util.Try
 
-/** State monad demo
-  *
-  * You can use this main function for checking how state function work in action.
-  *
-  * Here you can see, how State objects can be combined (chained) together using for-comprehension.
-  *
-  * Feel free to play around with those, as understanding of State will become useful when we learn next powerful
-  * abstraction - Free.
-  */
+/**
+ * State monad demo
+ *
+ * You can use this main function for checking how state function work in action.
+ *
+ * Here you can see, how State objects can be combined (chained) together using for-comprehension.
+ *
+ * Feel free to play around with those, as understanding of State will become useful when we learn next powerful
+ * abstraction - Free.
+ */
 object Main {
 
   def main(args: Array[String]): Unit = {

@@ -1,7 +1,8 @@
 package io.scalawave.workshop.common
 
-/** Type of all possible validation errors one can return in our example app.
-  */
+/**
+ * Type of all possible validation errors one can return in our example app.
+ */
 sealed trait ParsingError
 
 final case class NotANumber(value: String) extends ParsingError {

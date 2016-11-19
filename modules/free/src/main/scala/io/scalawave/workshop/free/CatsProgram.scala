@@ -4,6 +4,13 @@ import cats.data.Coproduct
 import cats.free.Free
 import io.scalawave.workshop.common.ActionType
 
+/**
+ * Here I took the liberty of implementing the whole program using our DSL.
+ *
+ * Interesting how similar are Cats and Scalaz versions :)
+ *
+ * If not for imports (and DSL classes' names) one might have trouble finding any difference.
+ */
 object CatsProgram {
 
   type Program[A] = Coproduct[CatsCommand, CatsCalculation, A]

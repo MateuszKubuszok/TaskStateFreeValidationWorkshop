@@ -2,6 +2,13 @@ package io.scalawave.workshop.free;
 
 import scalaz._
 
+/**
+ * This class is something we had to implement manually, because so far Scalaz doesn't provide equivalent of Cats':
+ *
+ * interpreter1 or interpreter 2
+ *
+ * Such a shame considering how useful piece of code it is.
+ */
 object ScalazUtils {
   sealed abstract class :+:[F[_], G[_]] {
     type λ[A] = Coproduct[F, G, A]

@@ -4,6 +4,13 @@ import io.scalawave.workshop.common.{ Currency, Config, DataSource, ActionType }
 
 import scala.util.Try
 
+/**
+ * Free demo
+ *
+ * You can use this main function for checking how your free functions would work in action.
+ *
+ * Make sure to look at the test to see how one can test free programs and interpreters.
+ */
 object Main {
 
   def main(args: Array[String]): Unit = {

@@ -4,6 +4,28 @@ import cats.free.{ Free, :<: }
 import io.scalawave.workshop.common.ActionType.ActionType
 import io.scalawave.workshop.common.Currency.Currency
 
+/*
+  * Free exercises - Cats
+  *
+  * 1. Simple free operations
+  *
+  * In the first exercise we'll try to build free DSLs in the simplest possible way. Such DSLs will be pretty
+  * troublesome to combine into bigger, more powerful DSLs, but they should give us some intuition into how free works.
+  *
+  * 2. Composable free
+  *
+  * In our next exercise we will modify Ops to make DSL composable. With that our 2 DSLs could be merged together into
+  * something resembling our intended program. Our first attempt will use Id - we can think of it as a transparent
+  * wrapper type. It can be used each time, code expects parametrized type and we don't need to wrap values int anything
+  * in particular.
+  *
+  * 3. Stateful free
+  *
+  * As we saw in previous exercise, we have a problem when interpreter is stateful and contains some state that should
+  * be shared with another container. But we already learnt a functional way of handling that. So here we'll try to
+  * create an interpreter that will let us handle state manipulation in a nice, functional way.
+  */
+
 sealed trait CatsCommand[Result]
 
 object CatsCommand {
