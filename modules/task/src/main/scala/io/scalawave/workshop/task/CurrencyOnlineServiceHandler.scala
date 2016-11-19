@@ -17,9 +17,14 @@ object CurrencyOnlineServiceHandler extends (Currency => Double) {
   def fetchDataSync(currency: Currency): Double = fetchDataTask(currency).unsafePerformSync
 
   def fetchDataTask(currency: Currency): Task[Double] = {
-    val task = Task(CurrencyOnlineService.query(currency))
+    val task = Task(wrapperForDefaultValue(currency))
     task.handleWith {
       case ConnectionError => fetchDataTask(currency)
     }
+  }
+
+  private val wrapperForDefaultValue: Currency => Double = {
+    case USD                => 1.0
+    case currency: Currency => CurrencyOnlineService.query(currency)
   }
 }

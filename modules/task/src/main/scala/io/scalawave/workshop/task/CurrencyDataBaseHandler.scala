@@ -1,6 +1,6 @@
 package io.scalawave.workshop.task
 
-import io.scalawave.workshop.common.Currency.Currency
+import io.scalawave.workshop.common.Currency._
 import io.scalawave.workshop.common.CurrencyDataBase
 import io.scalawave.workshop.common.CurrencyDataBase.DBError
 
@@ -17,9 +17,14 @@ object CurrencyDataBaseHandler extends (Currency => Double) {
   def fetchDataSync(currency: Currency): Double = fetchDataTask(currency).unsafePerformSync
 
   def fetchDataTask(currency: Currency): Task[Double] = {
-    val task = Task(CurrencyDataBase.query(currency))
+    val task = Task(wrapperForDefaultValue(currency))
     task.handleWith {
       case DBError => fetchDataTask(currency)
     }
+  }
+
+  private val wrapperForDefaultValue: Currency => Double = {
+    case USD                => 1.0
+    case currency: Currency => CurrencyDataBase.query(currency)
   }
 }

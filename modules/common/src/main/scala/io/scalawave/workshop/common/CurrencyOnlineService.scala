@@ -15,7 +15,7 @@ object CurrencyOnlineService {
     AUD -> 1.37
   )
 
-  private val connectionDelay = 1000
+  private val connectionDelay = 750
 
   private val errorRatio = 0.50
 
