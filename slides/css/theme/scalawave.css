@@ -10,6 +10,15 @@ html * {
 h1 {
   word-spacing: 25px; }
 
+h2 {
+  word-spacing: 20px; }
+
+h3 {
+  word-spacing: 15px; }
+
+h4 {
+  word-spacing: 12px; }
+
 /*********************************************
  * GLOBAL STYLES
  *********************************************/
@@ -59,7 +68,7 @@ body {
   font-size: 1.5em; }
 
 .reveal h3 {
-  font-size: 1.3em; }
+  font-size: 1.1em; }
 
 .reveal h4 {
   font-size: 1em; }
