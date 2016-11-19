@@ -8,20 +8,12 @@ lazy val root = project.root
   .setDescription("Task, State, Free, Validation workshop")
   .setInitialCommand("_")
   .configureRoot
-  .aggregate(common, warmup, validation, state, free, task, summaryCats, summaryScalaz)
+  .aggregate(common, validation, state, free, task, summaryCats, summaryScalaz)
 
 lazy val common = project.from("common")
   .setName("workshop-common")
   .setDescription("Common utils used in exercises")
   .configureModule
-
-lazy val warmup = project.from("warmup")
-  .setName("workshop-warmup")
-  .setDescription("Warmup: implicits, typeclasses and monads")
-  .setInitialCommand("warmup._")
-  .configureModule
-  .dependsOn(common)
-  .settings(mainClass in (Compile, run) := Some("io.scalawave.workshop.warmup.Main"))
 
 lazy val validation = project.from("validation")
   .setName("workshop-validation")
