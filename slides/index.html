@@ -257,7 +257,7 @@ validation.ensure(errorMessage) { predicate }</code></pre>
             <pre class="fragment"><code class="hljs scala">Task(operation)
 Task.now(operation)
 Task.delay(operation)</code></pre>
-            <aside class="notes">Explain that the latter will avoid using thread pool.</aside>
+            <aside class="notes">Explain that the latter will avoid using thread pool and that Task do NOT run immediately.</aside>
           </section>
           <section>
             <h3>Running task</h3>
@@ -428,8 +428,57 @@ val (config2, b) = pipe.run(config).memoize.value // memoize</code></pre>
         </section>
         <section><h1>Free</h1></section>
         <section><h2>Free</h2><section></section>
-          <section>Why - better separation of concerns</section>
-          <section>How - elements of free monad</section>
+          <section>
+            <h3>Why</h3>
+            <pre class="fragment"><code class="hljs scala">def getUser: User
+def updateUser(user: User): User
+def getUserPreferences(user: User): Set[Preference]</code></pre>
+             <aside class="notes">Explain problems with straightforward approach - composing, async, etc.</aside>
+          </section>
+          <section>
+            <h3>Why</h3>
+            <pre><code class="hljs scala">def getUser: Future[User]
+def updateUser(user: User): Future[User]
+def getUserPreferences(user: User): Future[[Set[Preference]]</code></pre>
+            <aside class="notes">Explain limitations of using Future - stack overflow, running execution immediately.</aside>
+          </section>
+          <section>
+            <h3>Why</h3>
+            <pre><code class="hljs scala">def getUser: Task[User]
+def updateUser(user: User): Task[User]
+def getUserPreferences(user: User): Task[[Set[Preference]]</code></pre>
+            <aside class="notes">Explain limitations of using Task - potentially stateful calculations, still another way of tight coupling with architecture.</aside>
+          </section>
+          <section>
+            <h3>Why</h3>
+            <pre><code class="hljs scala">def getUser: State[Config, User]
+def updateUser(user: User): State[Config, User]
+def getUserPreferences(user: User): State[Config, [Set[Preference]]</code></pre>
+            <aside class="notes">Explain limitations of using Task - potentially stateful calculations, still another way of tight coupling with architecture.</aside>
+          </section>
+          <section>
+            <h3>How about</h3>
+            <pre><code class="hljs scala">def getUser: X[User]
+def updateUser(user: User): X[User]
+def getUserPreferences(user: User): X[[Set[Preference]]</code></pre>
+          </section>
+          <section>
+            <h3>How about</h3>
+            <pre><code class="hljs scala">val getUserWithPrefs = for {
+  user  <- getUser
+  prefs <- getUserPreferences(user)
+} yield (user, prefs)
+
+val x: Future[(User, Set[Preferences])] =
+    getUserWithPrefs.interpret(asFuture)
+val y: Task[(User, Set[Preferences])] =
+    getUserWithPrefs.interpret(asTask)
+val z: State[Config, (User, Set[Preferences])] =
+    getUserWithPrefs.interpret(asState)</code></pre>
+          </section>
+          <section>
+            <h3>How - elements of free monad</h3>
+          </section>
           <section>Lifting and boilerplate case classes</section>
           <section>Exercise - building 2 very simple DSLs</section>
           <section>Coproduct and inject - easy merge of DSLs and interpreters</section>
