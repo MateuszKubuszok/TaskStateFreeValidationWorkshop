@@ -408,9 +408,23 @@ val (config2, b) = pipe.run(config).memoize.value // memoize</code></pre>
                 </tr>
               </tbody>
             </table>
+            <aside class="notes">This concerns State.x methods of the companion objects.</aside>
           </section>
-          <section>Exercise - calling basic methods to see how they behave</section>
-          <section>Summary</section>
+          <section>
+            <h3>Exercise - calling basic methods to see how they behave</h3>
+            <ul>
+              <li class="fragment">well create very simple State functions</li>
+              <li class="fragment">again, we can look at tests and main to see how they perform</li>
+            </ul>
+          </section>
+          <section>
+            <h3>Summary</h3>
+            <ul>
+              <li class="fragment">allows creating pipelines for stateful calculations</li>
+              <li class="fragment">it can operate on immutable data, so we stay functional</li>
+              <li class="fragment">calculations are only run when we supply our pipeline with initial state</li>
+            </ul>
+          </section>
         </section>
         <section><h1>Free</h1></section>
         <section><h2>Free</h2><section></section>
