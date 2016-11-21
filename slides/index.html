@@ -228,13 +228,53 @@ validation.ensure(errorMessage) { predicate }</code></pre>
             <h3>Why</h3>
             <ul>
               <li class="fragment">Scala's future is not a monad</li>
-              <li class="fragment">scalaz's future interface is impractical</li>
+              <li class="fragment">Scalaz's future interface is impractical</li>
               <li class="fragment">useful functions for sync and async execution</li>
             </ul>
-            <aside class="notes">Mention that, while there are some important implementation concerns, </aside>
+            <aside class="notes">Mention that, while there are some important implementation concerns, but overall main advantage is the API.</aside>
           </section>
-          <section>For-comprehension</section>
-          <section>Useful methods</section>
+          <section>
+            <h3>For-comprehension</h3>
+            <pre class="fragment"><code class="hljs scala">for {
+  value  <- valueTask
+  (a, b) <- pairTask(value)
+  c      <- otherTask
+} yield (a, b, c)</code></pre>
+          </section>
+          <section>
+            <h3>Exclusive or</h3>
+            <p class="fragment">Like <b>Either</b> but with bias towards right (monad!).</p>
+            <pre class="fragment"><code class="hljs scala">(value: \/[Left, Right]) match {
+  case -\/(left)  => // used for errors
+  case \/-(right) => // used for correct values
+}</code></pre>
+            <p class="fragment">In Cats: <b>Xor</b>, <b>Xor.Left</b> and <b>Xor.Right</b> respectively.</p>
+          </section>
+          <section>
+            <h3>Running task</h3>
+            <pre class="fragment"><code class="hljs scala">task.unsafePerformAsync {
+  case -\/(error) => // handle left error
+  case \/-(value) => // handle right value
+}
+task.unsafePerformSync // returns value or throws on error
+task.unsafePerformSyncAttempt // returns Throwable \/ Value</code></pre>
+            <aside class="notes">Mention that timeout could be Duration or milliseconds in Long.</aside>
+          </section>
+          <section>
+            <h3>Running task with timeout</h3>
+            <pre><code class="hljs scala">task.unsafePerformSyncFor(timeout)
+task.unsafePerformSyncAttemptFor(timeout) // Throwable \/ Value</code></pre>
+          </section>
+          <section>
+            <h3>Running with interruptions</h3>
+            <pre><code class="hljs scala">// returns () => Unit function for canceling task
+task.unsafePerformAsyncInterruptibly {
+  case -\/(error) => // handle left error
+  case \/-(value) => // handle right value
+}
+// cancels task when atomicBoolean becomes true
+task.unsafePerformAsyncInterruptibly(handler, atomicBoolean)</code></pre>
+          </section>
           <section>ExecutionServices - difference between ExecutionContext</section>
           <section>Exercise - calling few methods to see how they behave</section>
           <section>Summary</section>
