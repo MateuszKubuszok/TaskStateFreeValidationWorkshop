@@ -162,8 +162,8 @@ val result2 = parseDouble(y) <*> (parseInt(x) map { Test.curried })</code></pre>
             <aside class="notes">Aka applicative builder.</aside>
           </section>
           <section>
-          	<h3>Problem</h3>
-          	<p>How errors get aggregated?</p>
+            <h3>Problem</h3>
+            <p>How errors get aggregated?</p>
           </section>
           <section>
             <h3>Semigroups</h3>
@@ -253,6 +253,13 @@ validation.ensure(errorMessage) { predicate }</code></pre>
             <p class="fragment">In Cats: <b>Xor</b>, <b>Xor.Left</b> and <b>Xor.Right</b> respectively.</p>
           </section>
           <section>
+            <h3>Creating task</h3>
+            <pre class="fragment"><code class="hljs scala">Task(operation)
+Task.now(operation)
+Task.delay(operation)</code></pre>
+            <aside class="notes">Explain that the latter will avoid using thread pool.</aside>
+          </section>
+          <section>
             <h3>Running task</h3>
             <pre class="fragment"><code class="hljs scala">task.unsafePerformAsync {
   case -\/(error) => // handle left error
@@ -302,10 +309,107 @@ val task3 = Task.fork(task1)(es) // forks ask1 on es service</code></pre>
         </section>
         <section><h1>State</h1></section>
         <section><h2>State</h2><section></section>
-          <section>Why - stateful calculations in functional paradigm</section>
-          <section>How - monadic wrapper for working on state -> calc result pairs</section>
+          <section>
+            <h3>Why - stateful calculations</h3>
+            <pre class="fragment"><code class="hljs scala">var config = Config()
+def x(): A = { config = update(config); calculateSth() }
+def y(z: A): B = { config = update(config, z); calculateSth(z) }
+val a = x
+val b = y(a)</code></pre>
+          </section>
+          <section>
+            <h3>Why - less stateful</h3>
+            <pre class="fragment"><code class="hljs scala">val config = Config()
+def x(config: Config): (config, A) = {
+  val config2 = update(config)
+  config2 -> calculateSth()
+}
+def y(config: Config, z: A) = {
+  val config2 = update(config, z)
+  config2 -> calculateSth(z)
+}
+val (config2, a) = x(config)
+val (config3, b) = y(config2, a)</code></pre>
+          </section>
+          <section>
+            <h3>Why - chained?</h3>
+            <pre class="fragment"><code class="hljs scala">y.tupled(x(config)) // ??</code></pre>
+          </section>
+          <section>
+            <h3>How about?</h3>
+            <pre class="fragment"><code class="hljs scala">for {
+  a <- x
+  b <- y(a)
+} yield b</code></pre>
+          </section>
+          <section>
+            <h3>Creating State pipeline</h3>
+            <pre class="fragment"><code class="hljs scala">def x = State[Config, A] { case (c, a) =>
+  update(c) -> calculateSth() // (Config, A)
+}
+def y(z: A) = State[Config, B] { case (c, a) =>
+  update(c, z) -> calculateSth(z) // (Config, B)
+}
+val pipe = for {
+  a <- x
+  b <- y(a)
+} yield b // just a pipe! no effects yet!</code></pre>
+          </section>
+          <section>
+            <h3>Running State pipeline</h3>
+            <p class="fragment">Cats:</p>
+            <pre class="fragment"><code class="hljs scala">val (config2, b) = pipe.run(config).value // run once
+val (config2, b) = pipe.run(config).memoize.value // memoize</code></pre>
+            <p class="fragment">Also <b>runA</b> and <b>runS</b> for just last value or state.</p>
+            <p class="fragment">Scalaz:</p>
+            <pre class="fragment"><code class="hljs scala">val (config2, b) = pipe(config)</code></pre>
+            <p class="fragment">Also <b>eval</b> and <b>exec</b> for just last value or state.</p>
+          </section>
+          <section>
+            <h3>Other useful methods</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>used for</th>
+                  <th>Cats</th>
+                  <th>Scalaz</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>s1 => (s2, a)</td>
+                  <td>apply</td>
+                  <td>apply</td>
+                </tr>
+                <tr>
+                  <td>s => (s, a)</td>
+                  <td>pure</td>
+                  <td>state</td>
+                </tr>
+                <tr>
+                  <td>s1 => (s2, ())</td>
+                  <td>modify</td>
+                  <td>modify</td>
+                </tr>
+                <tr>
+                  <td>s => (s, f(s))</td>
+                  <td>inspect</td>
+                  <td>gets</td>
+                </tr>
+                <tr>
+                  <td>s => (s, s)</td>
+                  <td>get</td>
+                  <td>get/init</td>
+                </tr>
+                <tr>
+                  <td>_ => (s, ())</td>
+                  <td>put</td>
+                  <td>put</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
           <section>Exercise - calling basic methods to see how they behave</section>
-          <section>Other useful methods</section>
           <section>Summary</section>
         </section>
         <section><h1>Free</h1></section>
