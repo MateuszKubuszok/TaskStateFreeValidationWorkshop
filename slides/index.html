@@ -126,7 +126,7 @@
             <ul>
               <li class="fragment">another type class</li>
               <li class="fragment">extends functor by handling functions stored within as a value</li>
-              <li class="fragment"><pre><code class="hljs scala">def pure[A]: A => Applicative[B]</code></pre></li>
+              <li class="fragment"><pre><code class="hljs scala">def pure[A]: A => Applicative[A]</code></pre></li>
               <li class="fragment"><pre><code class="hljs scala">def map[A, B]: (Applicative[A => B], Applicative[A]) => Applicative[B]</code></pre></li>
             </ul>
           </section>
@@ -159,6 +159,7 @@ def x: Validation[Error, String] = x.ap(y)</code></pre>
             <p class="fragment">Scalaz</p>
             <pre class="fragment"><code class="hljs scala">val result1 = (parseInt(x) |@| parseDouble(y))(Test)
 val result2 = parseDouble(y) <*> (parseInt(x) map { Test.curried })</code></pre>
+            <aside class="notes">Aka applicative builder.</aside>
           </section>
           <section>
           	<h3>Problem</h3>
@@ -186,13 +187,17 @@ val result2 = parseDouble(y) <*> (parseInt(x) map { Test.curried })</code></pre>
           <section>
             <h3>Sequential validation</h3>
             <p class="fragment">Cats</p>
-            <pre class="fragment"><code class="hljs scala">validated.ensure(errorMessage) { predicate }</code></pre>
+            <pre class="fragment"><code class="hljs scala">validated.andThen { value => anotherValudation(value) } // or
+validated.ensure(errorMessage) { predicate }</code></pre>
             <p class="fragment">Scalaz</p>
-            <pre class="fragment"><code class="hljs scala">validation.ensure(errorMessage) { predicate }</code></pre>
+            <pre class="fragment"><code class="hljs scala">import Validation.FlatMap._
+validated.andThen { value => anotherValudation(value) } // or
+validation.ensure(errorMessage) { predicate }</code></pre>
             <aside class="notes">Explain that it will stop validation on first error.</aside>
           </section>
           <section>
             <h3>Parallel validation</h3>
+            <p class="fragment">Use cartsian/applicative builders or:</p>
             <p class="fragment">Cats</p>
             <pre class="fragment"><code class="hljs scala">v1 combine v2</code></pre>
             <p class="fragment">Scalaz</p>
@@ -219,7 +224,15 @@ val result2 = parseDouble(y) <*> (parseInt(x) map { Test.curried })</code></pre>
         </section>
         <section><h1>Task</h1></section>
         <section><h2>Task</h2><section></section>
-          <section>Why - Scala's future is not a monad, scalaz's future interface is impractical</section>
+          <section>
+            <h3>Why</h3>
+            <ul>
+              <li class="fragment">Scala's future is not a monad</li>
+              <li class="fragment">scalaz's future interface is impractical</li>
+              <li class="fragment">useful functions for sync and async execution</li>
+            </ul>
+            <aside class="notes">Mention that, while there are some important implementation concerns, </aside>
+          </section>
           <section>For-comprehension</section>
           <section>Useful methods</section>
           <section>ExecutionServices - difference between ExecutionContext</section>
