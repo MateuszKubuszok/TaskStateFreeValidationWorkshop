@@ -34,12 +34,13 @@
           <section>
             <h3>The plan</h3>
             <ul>
-              <li class="fragment">Basic concepts</li>
+              <li class="fragment">basic concepts</li>
               <li class="fragment">Validation</li>
               <li class="fragment">Task</li>
               <li class="fragment">State</li>
               <li class="fragment">Free</li>
               <li class="fragment">example application build with implemented components</li>
+              <aside class="notes">Explain how application will look like to get feeling what will be needed. Let them run SBT in order to fetch all dependencies ahead.</aside>
             </ul>
           </section>
           <section>
@@ -53,7 +54,7 @@
           <section>
             <h3>Concepts we'd better know</h3>
             <ul>
-              <li class="fragment">typeclasses</li>
+              <li class="fragment">type classes</li>
               <li class="fragment">monads</li>
               <li class="fragment">implicits</li>
             </ul>
@@ -67,7 +68,7 @@
             </ul>
           </section>
           <section>
-            <h4>Typeclass</h4>
+            <h4>Type class</h4>
             <ul>
               <li class="fragment">based on ad hoc polymorphism</li>
               <li class="fragment">puts constraint on a type, by requiring overloading of some functions</li>
@@ -83,12 +84,13 @@
             </ul>
           </section>
           <section>
-            <h4>Monad typeclass</h4>
+            <h4>Monad type class</h4>
             <ul>
               <li class="fragment">type constructor</li>
               <li class="fragment"><b>unit</b> function (<i>putting things into the box for the first time</i>)<pre><code class="hljs scala">def unit[T]: T => Monad[T]</code></pre></li>
-              <li class="fragment"><b>bind</b> function (<i>taking something out of the box and deciding what to do with it</i>)<pre><code class="hljs scala">def bind[T]: (Monad[T], T => Monad[T]) => Monad[T]</code></pre> in Scala known as <b>flatMap</b>!</li>
+              <li class="fragment"><b>bind</b> function (<i>taking something out of the box and deciding what to do with it</i>)<pre><code class="hljs scala">def bind[S, T]: (Monad[S], S => Monad[T]) => Monad[T]</code></pre> in Scala known as <b>flatMap</b>!</li>
             </ul>
+            <aside class="notes">Mention the map -> flatten thing as well as where it doesn't apply (Future).</aside>
           </section>
           <section>
             <h4>Monadic laws</h4>
@@ -99,24 +101,121 @@
             </ul>
           </section>
           <section>
-            <h3>Implicit params</h3>
+            <h3>Implicit parameters</h3>
             <ul>
               <li class="fragment">can be used to extract <i>implicit</i> value from the scope, basing on its type</li>
               <li class="fragment">can be used to create a value from <i>implicit</i> function in scope basing, on its type</li>
-              <li class="fragment">used (among others) to pass a typeclass to a method in both standard library (e.g. CanBuildFrom) as well as in Cats and Scalaz (where some typeclasses existis <i>physically</i> as objects)</li>
+              <li class="fragment">used (among others) to pass a type class to a method in both standard library (e.g. CanBuildFrom) as well as in Cats and Scalaz (where some type classes exists <i>physically</i> as objects)</li>
             </ul>
           </section>
         </section>
         <section><h1>Validation</h1></section>
         <section><h2>Validation</h2><section></section>
-          <section>Why - disadvantages of: exceptions, error values, either, Xor</section>
-          <section>How - applicative functors</section>
-          <section>Semigroups and non-empty lists</section>
-          <section>Sequential validation</section>
-          <section>Parallel validation</section>
-          <section>Combining validations -> combining values</section>
-          <section>Exercise - let's build simple validators</section>
-          <section>Summary</section>
+          <section>
+            <h3>Why</h3>
+            <p class="fragment">Existing ways of error handling</p>
+            <ul>
+              <li class="fragment">error flags/values</li>
+              <li class="fragment">exceptions</li>
+              <li class="fragment"><b>Either</b> and <b>EitherT</b></li>
+              <li class="fragment">exclusive or: <b>Xor</b>, <b>\/</b></li>
+            </ul>
+          </section>
+          <section>
+            <h3>How - applicative functors</h3>
+            <ul>
+              <li class="fragment">another type class</li>
+              <li class="fragment">extends functor by handling functions stored within as a value</li>
+              <li class="fragment"><pre><code class="hljs scala">def pure[A]: A => Applicative[B]</code></pre></li>
+              <li class="fragment"><pre><code class="hljs scala">def map[A, B]: (Applicative[A => B], Applicative[A]) => Applicative[B]</code></pre></li>
+            </ul>
+          </section>
+          <section>
+            <h3>Syntax - wrapping values</h3>
+            <p class="fragment">Cats</p>
+            <pre class="fragment"><code class="hljs scala">val s: Validated[Error, Int] = valid[Error, Int](12)
+val f: Validated[Error, Int] = invalid[Error, Int](error)</code></pre>
+            <p class="fragment">Scalaz</p>
+            <pre class="fragment"><code class="hljs scala">val s: Validation[Error, Int] = 12.success[Error]
+val f: Validation[Error, Int] = error.failure[Int]</code></pre>
+          </section>
+          <section>
+            <h3>Syntax - applicative</h3>
+            <p class="fragment">Cats</p>
+            <pre class="fragment"><code class="hljs scala">def x: Validated[Error, Double]
+def y = Validated[Error, Double => String]
+def x: Validated[Error, String] = x.ap(y)</code></pre>
+            <p class="fragment">Scalaz</p>
+            <pre class="fragment"><code class="hljs scala">def x: Validation[Error, Double]
+def y = Validation[Error, Double => String]
+def x: Validation[Error, String] = x.ap(y)</code></pre>
+            <aside class="notes">Mention difference in signature: flipped arguments.</aside>
+          </section>
+          <section>
+            <h3>Syntax - cartesian builder</h3>
+            <pre class="fragment"><code class="hljs scala">case class Test(i: Int, d: Double)</code></pre>
+            <p class="fragment">Cats</p>
+            <pre class="fragment"><code class="hljs scala">val result = (parseInt(x) |@| parseDouble(y)) map { Test }</code></pre>
+            <p class="fragment">Scalaz</p>
+            <pre class="fragment"><code class="hljs scala">val result1 = (parseInt(x) |@| parseDouble(y))(Test)
+val result2 = parseDouble(y) <*> (parseInt(x) map { Test.curried })</code></pre>
+          </section>
+          <section>
+          	<h3>Problem</h3>
+          	<p>How errors get aggregated?</p>
+          </section>
+          <section>
+            <h3>Semigroups</h3>
+            <ul>
+              <li class="fragment">algebraic structure as well as type class :)</li>
+              <li class="fragment">basically value set with associative binary operator</li>
+              <li class="fragment"><pre><code class="hljs scala">def combine(a1: A, a2: A): A // alias a1 |+| a2</code></pre></li>
+              <li class="fragment"><pre><code class="hljs scala">(a1 |+| a2) |+| a3 == a1 |+| (a2 |+| a3)</code></pre></li>
+            </ul>
+            <aside class="notes">|@| - read like scream, "Admiral Ackbar" or "Macaulay Culkin".</aside>
+          </section>
+          <section>
+            <h3>Non empty list</h3>
+            <p class="fragment">Cats</p>
+            <pre class="fragment"><code class="hljs scala">final case class NonEmptyList[A](head: A, tail: List[A]) { ...
+  def concat(other: NonEmptyList[A]): NonEmptyList[A] ... }</code></pre>
+            <p class="fragment">Scalaz</p>
+            <pre class="fragment"><code class="hljs scala">final class NonEmptyList[A](head: A, tail: IList[A]) { ...
+  def append(f2: NonEmptyList[A]): NonEmptyList[A] ... }</code></pre>
+          </section>
+          <section>
+            <h3>Sequential validation</h3>
+            <p class="fragment">Cats</p>
+            <pre class="fragment"><code class="hljs scala">validated.ensure(errorMessage) { predicate }</code></pre>
+            <p class="fragment">Scalaz</p>
+            <pre class="fragment"><code class="hljs scala">validation.ensure(errorMessage) { predicate }</code></pre>
+            <aside class="notes">Explain that it will stop validation on first error.</aside>
+          </section>
+          <section>
+            <h3>Parallel validation</h3>
+            <p class="fragment">Cats</p>
+            <pre class="fragment"><code class="hljs scala">v1 combine v2</code></pre>
+            <p class="fragment">Scalaz</p>
+            <pre class="fragment"><code class="hljs scala">v1 +++ v2</code></pre>
+            <aside class="notes">Mention that it uses semigroup on both types!</aside>
+          </section>
+          <section>
+            <h3>Exercise - let's build simple validation</h3>
+            <ul>
+              <li class="fragment">implement few basic concepts - we can use <b>Try</b> wrappers</li>
+              <li class="fragment">compose validators in order to build <b>Config</b></li>
+              <li class="fragment">we can use unit tests and main to check how they works</li>
+            </ul>
+            <aside class="notes">Describe whole concept of example application, so that people would understand what they need to implement.</aside>
+          </section>
+          <section>
+            <h3>Summary</h3>
+            <ul>
+              <li class="fragment">functional approach to error handling</li>
+              <li class="fragment">composable</li>
+              <li class="fragment">let you get rid of exceptions and other dirty solutions</li>
+            </ul>
+          </section>
         </section>
         <section><h1>Task</h1></section>
         <section><h2>Task</h2><section></section>
