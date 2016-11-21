@@ -230,6 +230,7 @@ validation.ensure(errorMessage) { predicate }</code></pre>
               <li class="fragment">Scala's future is not a monad</li>
               <li class="fragment">Scalaz's future interface is impractical</li>
               <li class="fragment">useful functions for sync and async execution</li>
+              <li class="fragment">trampoline let us avoid stack overflow</li>
             </ul>
             <aside class="notes">Mention that, while there are some important implementation concerns, but overall main advantage is the API.</aside>
           </section>
@@ -240,6 +241,7 @@ validation.ensure(errorMessage) { predicate }</code></pre>
   (a, b) <- pairTask(value)
   c      <- otherTask
 } yield (a, b, c)</code></pre>
+            <aside class="notes">Mention that trampoline allows us to avoid stack overflow when we use flatMaps.</aside>
           </section>
           <section>
             <h3>Exclusive or</h3>
@@ -275,9 +277,28 @@ task.unsafePerformAsyncInterruptibly {
 // cancels task when atomicBoolean becomes true
 task.unsafePerformAsyncInterruptibly(handler, atomicBoolean)</code></pre>
           </section>
-          <section>ExecutionServices - difference between ExecutionContext</section>
-          <section>Exercise - calling few methods to see how they behave</section>
-          <section>Summary</section>
+          <section>
+            <h3>ExecutionServices and runner thread</h3>
+            <pre><code class="hljs scala">val task1 = Task(function) // default ExecutionService
+val task2 = Task(function)(es) // es service - might be implicit
+val task3 = Task.fork(task1)(es) // forks ask1 on es service</code></pre>
+          </section>
+          <section>
+            <h3>Exercise - calling few methods to see how they behave</h3>
+            <ul>
+              <li class="fragment">just use few methods to fulfill tests</li>
+              <li class="fragment">take a look at tests and main to see some examples of usage</li>
+            </ul>
+            <aside class="notes">Show that by default task uses pool, which uses daemons and what are the consequences.</aside>
+          </section>
+          <section>
+            <h3>Summary</h3>
+            <ul>
+              <li class="fragment">nice interface</li>
+              <li class="fragment">less stack-overflow</li>
+            </ul>
+            <aside class="notes">Mention monix's Task for people, who want higher performance.</aside>
+          </section>
         </section>
         <section><h1>State</h1></section>
         <section><h2>State</h2><section></section>
