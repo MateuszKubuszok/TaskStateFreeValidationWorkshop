@@ -500,21 +500,67 @@ object FutureInterpreter extends (UserDSL ~> Future) {
       case GetPreferences(user) => Future { /* get prefs */ }
     }
 }</code></pre>
-            <aside class="notes">Explain how natural transform works.</aside>
+            <aside class="notes">Explain how natural transformation works.</aside>
           </section>
           <section>
-            <h3>How - elements of free monad</h3>
-            <p>We have 3 cases to consider</p>
+            <h3>How - elements of Free</h3>
+            <p class="fragment">We have 3 cases to consider</p>
             <ol>
-              <li class="fragment">storing <b>pure</b> value<pre><code class="hljs scala">case class Pure[S[_], A](a: A)</code></pre></li>
+              <li class="fragment">storing <b>Pure</b> value - this we can just extract (aka <b>Return</b>)</li>
+              <li class="fragment"><b>Suspend</b>ing calculation - this we can interpret!</li>
+              <li class="fragment">storing <b>FlatMapped</b> calculation (aka <b>Gosub</b>)</li>
             </ol>
+            <pre class="fragment"><code class="hljs scala">sealed abstract class Free[S[_], A]
+case class Pure[S[_], A](a: A) extends Free[S, A]
+case class Suspend[S[_], A](a: S[A]) extends Free[S, A]
+case class FlatMapped[S[_], A0, B](a0: Free[S, A0], f0: A0 => Free[S, B]) extends Free[S, A]</code></pre>
+            <aside class="notes">Pure -> store value, Suspend -> store AST, FlatMapped -> x flatMap y = FlatMapped(x, y).</aside>
           </section>
-          <section>Lifting and boilerplate case classes</section>
-          <section>Exercise - building 2 very simple DSLs</section>
+          <section>
+            <h3>How - lifting</h3>
+            <ul>
+              <li class="fragment">take function <b>F -> G</b></li>
+              <li class="fragment">put some <b>H</b> in between: <b>F -> H -> G</b></li>
+              <li class="fragment">we can say that we lifted <b>F</b> to <b>H</b></li>
+            </ul>
+          </section>
+          <section>
+            <h3>How - lifting to Free</h3>
+            <p class="fragment">We lift our DSL to Free, it can use natural transformation to get us to the actual computation.</p>
+            <pre class="fragment"><code class="hljs scala">class Ops {
+  def getUser: Free[UserDSL, User] = Free.liftF(GetUser)
+  def updateUser(user: User): Free[UserDSL, User] = Free.liftF(UpdateUser(user))
+  def getPreferences(user: User): Free[UserDSL, Set[Preference]] = Free.liftF(GetPreferences(user))
+}</code></pre>
+            <aside class="notes">Lifting uses suspend. Why we use Ops instead of object or plain values I'll explain later.</aside>
+          </section>
+          <section>
+            <h3>Finally</h3>
+            <pre class="fragment"><code class="hljs scala">val ops = new Ops
+val interpreter: (UserDSL ~> Future)
+val getUserWithPrefs = for {
+  user  <- ops.getUser
+  prefs <- ops.getUserPreferences(user)
+} yield (user, prefs)
+
+val future: Future[(User, Set[Preference])] =
+    getUserWithPrefs.foldMap(interpreter)
+</code></pre>
+            <aside class="notes">Lifting uses suspend.</aside>
+          </section>
+          <section>
+            <h3>Exercise - building 2 very simple DSLs</h3>
+            <ul>
+              <li class="fragment">let us build 2 very simple DSLs and interpreters</li>
+              <li class="fragment">we'll use tests with mock interpreter to check how they work</li>
+              <li class="fragment">boilerplate part is already implemented</li>
+            </ul>
+          </section>
           <section>Coproduct and inject - easy merge of DSLs and interpreters</section>
           <section>Exercise - updating DSLs to made them mergable</section>
           <section>How to get rid of state within interpreters using State monad</section>
           <section>Exercise - making state interpreters</section>
+          <section>Useful stuff library for cats free which uses macros to handle boilerplate</section>
           <section>Summary</section>
         </section>
         <section><h1>Combining them together</h1></section>
