@@ -4,7 +4,7 @@ import io.scalawave.workshop.common.Config
 import io.scalawave.workshop.common.Currency._
 import io.scalawave.workshop.common.DataSource._
 import io.scalawave.workshop.free.{ ScalazCalculationStateInterpreter, ScalazCommandStateInterpreter, ScalazProgram }
-import io.scalawave.workshop.free.ScalazUtils._
+import io.scalawave.workshop.free.ScalazCoproductUtils._
 import io.scalawave.workshop.task.{ CurrencyOnlineServiceHandler, CurrencyDataBaseHandler }
 import io.scalawave.workshop.validation.ScalazValidation._
 

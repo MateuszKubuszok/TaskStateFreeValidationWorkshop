@@ -49,7 +49,7 @@ object Main {
   def scalazIdTest(): Unit = {
     import scalaz._
     import Scalaz._
-    import ScalazUtils._
+    import ScalazCoproductUtils._
 
     val configStore = ConfigStore(Config(2, DataSource.DataBase))
     val commandInterpreter = new ScalazCommandIdInterpreter(

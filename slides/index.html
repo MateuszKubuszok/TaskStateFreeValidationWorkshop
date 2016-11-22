@@ -118,7 +118,7 @@
               <li class="fragment">error flags/values</li>
               <li class="fragment">exceptions</li>
               <li class="fragment"><b>Either</b> and <b>EitherT</b></li>
-              <li class="fragment">exclusive or: <b>Xor</b>, <b>\/</b></li>
+              <li class="fragment">exclusive or: <b>Xor</b>, disjunction <b>\/</b></li>
             </ul>
           </section>
           <section>
@@ -244,7 +244,7 @@ validation.ensure(errorMessage) { predicate }</code></pre>
             <aside class="notes">Mention that trampoline allows us to avoid stack overflow when we use flatMaps.</aside>
           </section>
           <section>
-            <h3>Exclusive or</h3>
+            <h3>Disjunction (or)</h3>
             <p class="fragment">Like <b>Either</b> but with bias towards right (monad!).</p>
             <pre class="fragment"><code class="hljs scala">(value: \/[Left, Right]) match {
   case -\/(left)  => // used for errors
@@ -424,6 +424,7 @@ val (config2, b) = pipe.run(config).memoize.value // memoize</code></pre>
               <li class="fragment">it can operate on immutable data, so we stay functional</li>
               <li class="fragment">calculations are only run when we supply our pipeline with initial state</li>
             </ul>
+            <aside class="notes">Mention that there is more generic state monad - IndexedState</aside>
           </section>
         </section>
         <section><h1>Free</h1></section>
@@ -439,28 +440,28 @@ def getUserPreferences(user: User): Set[Preference]</code></pre>
             <h3>Why</h3>
             <pre><code class="hljs scala">def getUser: Future[User]
 def updateUser(user: User): Future[User]
-def getUserPreferences(user: User): Future[[Set[Preference]]</code></pre>
+def getUserPreferences(user: User): Future[Set[Preference]]</code></pre>
             <aside class="notes">Explain limitations of using Future - stack overflow, running execution immediately.</aside>
           </section>
           <section>
             <h3>Why</h3>
             <pre><code class="hljs scala">def getUser: Task[User]
 def updateUser(user: User): Task[User]
-def getUserPreferences(user: User): Task[[Set[Preference]]</code></pre>
+def getUserPreferences(user: User): Task[Set[Preference]]</code></pre>
             <aside class="notes">Explain limitations of using Task - potentially stateful calculations, still another way of tight coupling with architecture.</aside>
           </section>
           <section>
             <h3>Why</h3>
             <pre><code class="hljs scala">def getUser: State[Config, User]
 def updateUser(user: User): State[Config, User]
-def getUserPreferences(user: User): State[Config, [Set[Preference]]</code></pre>
+def getUserPreferences(user: User): State[Config, Set[Preference]]</code></pre>
             <aside class="notes">Explain limitations of using Task - potentially stateful calculations, still another way of tight coupling with architecture.</aside>
           </section>
           <section>
             <h3>How about</h3>
             <pre><code class="hljs scala">def getUser: X[User]
 def updateUser(user: User): X[User]
-def getUserPreferences(user: User): X[[Set[Preference]]</code></pre>
+def getUserPreferences(user: User): X[Set[Preference]]</code></pre>
           </section>
           <section>
             <h3>How about</h3>
@@ -556,12 +557,118 @@ val future: Future[(User, Set[Preference])] =
               <li class="fragment">boilerplate part is already implemented</li>
             </ul>
           </section>
-          <section>Coproduct and inject - easy merge of DSLs and interpreters</section>
-          <section>Exercise - updating DSLs to made them mergable</section>
-          <section>How to get rid of state within interpreters using State monad</section>
-          <section>Exercise - making state interpreters</section>
-          <section>Useful stuff library for cats free which uses macros to handle boilerplate</section>
-          <section>Summary</section>
+          <section>
+            <h3>Problem - how to "merge" 2 DSLs?</h3>
+            <pre class="fragment"><code class="hljs scala">sealed trait Command[Result]
+object Command {
+  ...
+  class Ops {
+    def getNextAction(question: String): Free[Command, ActionType] = ...
+    def configure(question: String): Free[Command, Unit] = ...
+    def quit: Free[Command, Unit] = ...
+  }
+}
+
+sealed trait Calculation[Result]
+object Calculation {
+  ...
+  class Ops {
+    def getCurrency(question: String): Free[Calculation, Currency] = ...
+    def getAmount(question: String): Free[Calculation, Double] = ...
+    def convert(from: Currency, to: Currency, amount: Double): Free[Calculation, Double] = ...
+    def displayValue(value: Double): Free[Calculation, Unit] = ...
+  }
+}</code></pre>
+          </section>
+          <section>
+            <h3>What if we had something like Either/Xor/Disjunction?</h3>
+            <pre class="fragment"><code class="hljs scala">type F[X] = Free[Command or Calculation, X]
+val interpreter: (Command or Calculation) ~> Future</code></pre>
+          </section>
+          <section>
+            <h3>Coproduct and inject</h3>
+            <pre class="fragment"><code class="hljs scala">object Command {
+  ...
+  class Ops[S[_]](implicit s0: Command :<: S) {
+    def getNextAction(question: String): Free[Command, ActionType] = 
+      Free.liftF(s0.inj(GetNextAction(question)))
+  }
+}
+// DSL for Command only
+val ops1 = new Command.Ops[Command]
+// DSL for Coproduct of Command and Calculation
+type Program[T] = Coproduct[Command, Calculation, T]
+val ops2 = new Command.Ops[Program]</code></pre>
+            <aside class="notes">Projection from A => A+B and B=> A+B are called injections.</aside>
+          </section>
+          <section>
+             <h3>Interpreting coproducts</h3>
+             <p class="fragment">Cats</p>
+             <pre class="fragment"><code class="hljs scala">val interpreter = commandI or calculationI // order matters!</code></pre>
+             <p class="fragment">Scalaz - well...</p>
+             <pre class="fragment"><code class="hljs scala">val interpreter = commandI :+: calculationI // order matters!</code></pre>
+             <p class="fragment">(*) one little problem...</p>
+           </section>
+          <section>
+             <h3>(*)</h3>
+             <p class="fragment">You have to implement <b>:+:</b> yourself.</p>
+             <pre class="fragment"><code class="hljs scala">object ScalazCoproductUtils {
+  sealed abstract class :+:[F[_], G[_]] {
+    type λ[A] = Coproduct[F, G, A]
+  }
+
+  implicit class ComposeInterpreters[F[_], H[_]](f: F ~> H) {
+    def :+:[G[_]](g: G ~> H): (G :+: F)#λ ~> H = new ((G :+: F)#λ ~> H) {
+      def apply[A](fa: (G :+: F)#λ[A]) = fa.run.fold(g, f)
+    }
+  }
+}</code></pre>
+           </section>
+          <section>
+            <h3>Exercise - updating DSLs to made them mergable</h3>
+            <ul>
+              <li class="fragment">use Coproduct and inject to update existing DSLs</li>
+            </ul>
+          </section>
+          <section>
+            <h3>Can we get rid of mutable state within interpreters?</h3>
+            <pre class="fragment"><code class="hljs scala">final class CommandIdInterpreter(...) extends (Command ~> Id) {
+
+  // no state is actually stored within interpreter right now!
+  override def apply[A](fa: Command[A]): Id[A] = fa match {
+    case GetNextAction(question) => getNextAction(question)
+    case Configure(question)     => configStore.config = configure(question) // !!!
+    case Quit                    => quit()
+  }
+
+  ...
+}</code></pre>
+          </section>
+          <section>
+            <h3>How about?</h3>
+            <pre class="fragment"><code class="hljs scala">type ConfigState[A] = State[Config, A]
+final class CommandIdInterpreter(...) extends (Command ~> ConfigState) {
+
+  // configStore is mutable!
+  override def apply[A](fa: Command[A]): ConfigState[A] = fa match {
+    case GetNextAction(question) => State.state[Config, ActionType](getNextAction(question))
+    case Configure(question)     => State.put(configure(question))
+    case Quit                    => State.state[Config, Unit](quit())
+  }
+
+  ...
+}</code></pre>
+          </section>
+          <section>
+            <h3>Exercise - making State interpreters</h3>
+            <ul>
+              <li class="fragment">implement state interpreter</li>
+            </ul>
+          </section>
+          <section>
+             <h3>Summary</h3>
+             <aside class="notes">Useful stuff library for cats free which uses macros to handle boilerplate.</aside>
+           </section>
         </section>
         <section><h1>Combining them together</h1></section>
         <section><h2>Combining them together</h2><section></section>

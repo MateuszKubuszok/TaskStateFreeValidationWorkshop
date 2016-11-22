@@ -9,7 +9,7 @@ import scalaz._
  *
  * Such a shame considering how useful piece of code it is.
  */
-object ScalazUtils {
+object ScalazCoproductUtils {
   sealed abstract class :+:[F[_], G[_]] {
     type λ[A] = Coproduct[F, G, A]
   }
