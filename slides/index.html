@@ -477,7 +477,37 @@ val z: State[Config, (User, Set[Preferences])] =
     getUserWithPrefs.interpret(asState)</code></pre>
           </section>
           <section>
+            <h3>How - interpreter pattern</h3>
+            <ul>
+              <li class="fragment">imagine your high level constructs as elements of some programming language</li>
+              <li class="fragment">turn it into AST which elements will express param and returned value types</li>
+              <li class="fragment">implement function that would take that virtual AST and run calculations for each element</li>
+              <li class="fragment">you effectively implemented interpreter working directly on your AST</li>
+            </ul>
+          </section>
+          <section>
+            <h3>How - natural transformation</h3>
+            <pre><code class="hljs scala">sealed trait UserDSL[Result]
+case object GetUser extends UserDSL[User]
+case class UpdateUser(user: User) extends UserDSL[User]
+case class GetPreferences(user: User) extends UserDSL[Set[Preferences]]
+
+object FutureInterpreter extends (UserDSL ~> Future) {
+  def apply[Result](command: UserDSL[Result]): Task[Result] =
+    command match {
+      case GetUser => Future { /* get user */ }
+      case UpdateUser(user) => Future { /* update user */ }
+      case GetPreferences(user) => Future { /* get prefs */ }
+    }
+}</code></pre>
+            <aside class="notes">Explain how natural transform works.</aside>
+          </section>
+          <section>
             <h3>How - elements of free monad</h3>
+            <p>We have 3 cases to consider</p>
+            <ol>
+              <li class="fragment">storing <b>pure</b> value<pre><code class="hljs scala">case class Pure[S[_], A](a: A)</code></pre></li>
+            </ol>
           </section>
           <section>Lifting and boilerplate case classes</section>
           <section>Exercise - building 2 very simple DSLs</section>
