@@ -8,11 +8,11 @@ import scalaz.concurrent.Task
 import scalaz.{ \/-, -\/ }
 
 /**
-  * Task demo
-  *
-  * This program's purpose is to show the difference between sync and async run, as well as some of the consequences
-  * of using default ExecutionService vs using a custom one.
-  */
+ * Task demo
+ *
+ * This program's purpose is to show the difference between sync and async run, as well as some of the consequences
+ * of using default ExecutionService vs using a custom one.
+ */
 object Main {
 
   def main(args: Array[String]): Unit = {
