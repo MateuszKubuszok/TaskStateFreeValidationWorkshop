@@ -20,14 +20,18 @@ import DataSource.DataSource
  *
  * Suggested imports:
  *
- * $ - [[cats.data.Validated]]
+ * $ - [[cats.data.Validated]] - functions like
  * $ - [[cats.data.ValidatedNel]]
- * $ - [[cats.syntax.cartesian._]]
+ * $ - [[cats.syntax.cartesian._]] - for access to applicative builder
  */
 object CatsValidation {
 
   /**
    * Parses passed String into Double or returns error message(s).
+   *
+   * Hint: you can use Scala's build-in method for converting String into Double. You might also consider trimming
+   * the text before conversion and mapping error to required type afterwards. Also pay attention that you'll most
+   * likely end up with not-additive error type, while we would like to have NEL instead.
    *
    * @param double value to parse
    * @return error messages or value
@@ -38,7 +42,10 @@ object CatsValidation {
       .toValidatedNel
 
   /**
-   * Parses passed String into natural number (positive Int) or returns error message(s).
+   * Parses passed String into natural number (non-negative Int) or returns error message(s).
+   *
+   * Hint: you can solve it in a similar manner to [[parseDouble]] exercise. The difference is that once you end up with
+   * Int, can should ensure that result is <= 0.
    *
    * @param natural value to parse
    * @return error messages or value
@@ -52,6 +59,10 @@ object CatsValidation {
   /**
    * Parses passed String into ActionType or returns error message(s).
    *
+   * Hint: each Enumeration type has a method for mapping value name to a value itself - as long as the name is trimmed
+   * and has the same cases as String used during value creation it should parse it without exception. In such case we
+   * only would have to adjust parsing failures to our error type.
+   *
    * @param actionType value to parse
    * @return error messages or value
    */
@@ -62,6 +73,8 @@ object CatsValidation {
 
   /**
    * Parses passed String into Currency or returns error message(s).
+   *
+   * Hint: you can reuse here your solution from [[parseActionType]].
    *
    * @param currency value to parse
    * @return error messages or value
@@ -74,6 +87,8 @@ object CatsValidation {
   /**
    * Parses passed String into DataSource or returns error message(s).
    *
+   * Hint: you can reuse here your solution from [[parseActionType]].
+   *
    * @param dataSource value to parse
    * @return error messages or value
    */
@@ -85,7 +100,10 @@ object CatsValidation {
   /**
    * Parses passed Strings into Config or returns error message(s).
    *
-   * @param accuracy String parsed into display accuracy
+   * Hint: we could reuse here [[parseNatural]] and [[parseDataSource]] - if only we had something like cartesian
+   * builder which would combine them and apply as arguments to the constructor...
+   *
+   * @param accuracy String parsed into display accuracy (natual number)
    * @param dataSource String parsed into DataSource
    * @return
    */

@@ -30,6 +30,10 @@ sealed trait CatsCommand[Result]
 
 object CatsCommand {
 
+  val a: Int => String = _.toString
+  val b: String => Double = _.toDouble
+  val c: Int => Double = a.andThen(b)
+
   final case class GetNextAction(question: String) extends CatsCommand[ActionType]
   final case class Configure(question: String) extends CatsCommand[Unit]
   case object Quit extends CatsCommand[Unit]
