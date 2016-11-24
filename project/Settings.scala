@@ -1,12 +1,8 @@
-import com.typesafe.sbt.SbtScalariform._
 import sbt.Defaults.testTasks
 import sbt.TestFrameworks.Specs2
 import sbt.Tests.Argument
-import sbt.{IntegrationTest => _, _}
+import sbt._
 import sbt.Keys._
-
-import scalariform.formatter.preferences._
-import org.scalastyle.sbt.ScalastylePlugin._
 
 object Settings extends Dependencies {
 
@@ -19,7 +15,7 @@ object Settings extends Dependencies {
 
   private val rootSettings = commonSettings
 
-  private val modulesSettings = scalariformSettings ++ commonSettings ++ Seq(
+  private val modulesSettings = commonSettings ++ Seq(
     scalacOptions ++= Seq(
       "-target:jvm-1.8",
       "-encoding", "UTF-8",
@@ -34,24 +30,13 @@ object Settings extends Dependencies {
       "-Ywarn-dead-code",
       "-Ywarn-infer-any",
       "-Ywarn-unused-import",
-      "-Xfatal-warnings",
       "-Xlint"
     ),
 
     resolvers ++= commonResolvers,
 
     libraryDependencies ++= mainDeps,
-    libraryDependencies ++= testDeps map (_ % "test"),
-
-    ScalariformKeys.preferences := ScalariformKeys.preferences.value
-      .setPreference(AlignArguments, true)
-      .setPreference(AlignParameters, true)
-      .setPreference(AlignSingleLineCaseStatements, true)
-      .setPreference(DoubleIndentClassDeclaration, true)
-      .setPreference(IndentLocalDefs, false)
-      .setPreference(PreserveSpaceBeforeArguments, true),
-
-    scalastyleFailOnError := true
+    libraryDependencies ++= testDeps map (_ % "test")
   )
 
   private def sequential = Argument(Specs2, "sequential")
