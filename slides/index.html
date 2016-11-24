@@ -107,6 +107,7 @@ box.map(f1).map(f2) == box.map(a.andThen(b))
             <h3>Applicative functors</h3>
             <ul>
               <li class="fragment">another type class</li>
+              <li class="fragment">defines pure function for wrapping values</li>
               <li class="fragment">extends functor by handling functions stored within as a value</li>
             </ul>
             <pre class="fragment"><code class="hljs scala">trait MyApplicative[T] extends MyFunctor[T] {
@@ -117,6 +118,15 @@ val apf: MyApplicative[String => Int] =
   MyApplicative((s: String) => s.toInt)
 val apr: MyApplicative[Int] = apv.ap(apf)</code></pre>
            <aside class="notes">Mention that constructor should be names pure or point.</aside>
+          </section>
+          <section>
+            <h3>Applicative laws</h3>
+            <ul>
+              <li class="fragment">identity<pre><code class="hljs scala">applicative.ap(MyApplicative(identity))</code></pre></li>
+              <li class="fragment">homomorphism<pre><code class="hljs scala">MyApplicative(value).ap(MyApplicative(funx)) == MyApplicative(func(value))</code></pre></li>
+              <li class="fragment">interchange<pre><code class="hljs scala">MyApplicative(value).ap(func) == MyApplicative(f => f(value)).ap(func)</code></pre></li>
+              <li class="fragment"><b>ap</b> is associative - composing just like plain functions</li>
+            </ul>
           </section>
           <section>
             <h3>Comparison</h3>
@@ -321,8 +331,8 @@ def toValidationNel[EE >: E, SS >: S]: ValidationNel[EE, SS]</code></pre>
           <section>
             <h3>Why</h3>
             <ul>
-              <li class="fragment">Scala's future is not a monad</li>
-              <li class="fragment">Scalaz's future interface is impractical</li>
+              <li class="fragment">Scala's Future is not a monad</li>
+              <li class="fragment">Scalaz's Future interface is impractical</li>
               <li class="fragment">useful functions for sync and async execution</li>
               <li class="fragment">trampoline let us avoid stack overflow</li>
             </ul>
@@ -340,8 +350,10 @@ def toValidationNel[EE >: E, SS >: S]: ValidationNel[EE, SS]</code></pre>
             <h4>Monad type class</h4>
             <ul>
               <li class="fragment">type constructor</li>
-              <li class="fragment"><b>unit</b> function (<i>putting things into the box for the first time</i>)<pre><code class="hljs scala">def unit[T]: T => Monad[T]</code></pre></li>
-              <li class="fragment"><b>bind</b> function (<i>taking something out of the box and deciding what to do with it</i>)<pre><code class="hljs scala">def bind[S, T]: (Monad[S], S => Monad[T]) => Monad[T]</code></pre> in Scala known as <b>flatMap</b>!</li>
+              <li class="fragment"><b>unit</b> function (constructor) (<i>putting things into the box for the first time</i>)<pre><code class="hljs scala">def unit[T]: T => Monad[T]</code></pre></li>
+              <li class="fragment"><b>flatMap</b> function (<i>taking something out of the box and deciding what to do with it</i>)<pre><code class="hljs scala">trait Monad[T] {
+   def flatMap[U](func: T => Monad[U]) => Monad[U]
+}</code></pre></li>
             </ul>
             <aside class="notes">Mention the map -> flatten thing as well as where it doesn't apply (Future).</aside>
           </section>
