@@ -352,7 +352,7 @@ def toValidationNel[EE >: E, SS >: S]: ValidationNel[EE, SS]</code></pre>
               <li class="fragment">type constructor</li>
               <li class="fragment"><b>unit</b> function (constructor) (<i>putting things into the box for the first time</i>)<pre><code class="hljs scala">def unit[T]: T => Monad[T]</code></pre></li>
               <li class="fragment"><b>flatMap</b> function (<i>taking something out of the box and deciding what to do with it</i>)<pre><code class="hljs scala">trait Monad[T] {
-   def flatMap[U](func: T => Monad[U]) => Monad[U]
+  def flatMap[U](func: T => Monad[U]) => Monad[U]
 }</code></pre></li>
             </ul>
             <aside class="notes">Mention the map -> flatten thing as well as where it doesn't apply (Future).</aside>
@@ -360,9 +360,9 @@ def toValidationNel[EE >: E, SS >: S]: ValidationNel[EE, SS]</code></pre>
           <section>
             <h4>Monadic laws</h4>
             <ul>
-              <li class="fragment"><b>left identity</b><pre><code class="hljs scala">bind(unit(value), func) == func(value)</code></pre></li>
-              <li class="fragment"><b>right identity</b><pre><code class="hljs scala">bind(mValue, unit) == mValue</code></pre></li>
-              <li class="fragment"><b>associativity</b><pre><code class="hljs scala">bind(bind(mv, f1), f2) == bind(mv, v => bind(f1(v), f2))</code></pre></li>
+              <li class="fragment"><b>left identity</b> - aka left unit law<pre><code class="hljs scala">unit(value).map(func) == func(value)</code></pre></li>
+              <li class="fragment"><b>right identity</b> - aka left unit law<pre><code class="hljs scala">mValue.flatMap(unit) == mValue</code></pre></li>
+              <li class="fragment"><b>associativity</b> - how we put "parenthesis" does not matter<pre><code class="hljs scala">m.flatMap(f1).flatMap(f2) == m.flatMap(v=> f1(v).flatMap(f2))</code></pre></li>
             </ul>
           </section>
           <section>
@@ -387,42 +387,65 @@ def flatMap[U](func: T => MyMonad[U]): MyMonad[U]</code></pre>
           </section>
           <section>
             <h3>Disjunction (or)</h3>
-            <p class="fragment">Like <b>Either</b> but with bias towards right (monad!).</p>
+            <pre class="fragment"><code class="hljs scala">sealed abstract class \/[+E, +S]
+case class -\/[+E](e: E) extends (E \/ Nothing)
+case class \/-[+S](s: S) extends (Nothing \/ S)</code></pre>
+            <p class="fragment">Like <b>Either</b> but (unlike pre-2.12) biased towards right (monad!).</p>
             <pre class="fragment"><code class="hljs scala">(value: \/[Left, Right]) match {
   case -\/(left)  => // used for errors
   case \/-(right) => // used for correct values
-}</code></pre>
-            <p class="fragment">In Cats: <b>Xor</b>, <b>Xor.Left</b> and <b>Xor.Right</b> respectively.</p>
+}
+
+for {
+  right1 <- disjunction
+  right2 <- anotherDisjunction(right2)
+} yield (right1, right2)</code></pre>
           </section>
           <section>
-            <h3>Creating task</h3>
-            <pre class="fragment"><code class="hljs scala">Task(operation)
+            <h3>Creating a task</h3>
+            <pre class="fragment"><code class="hljs scala">// def apply[A](a: => A)
+//             (implicit pool: ExecutorService =
+//                  Strategy.DefaultExecutorService): Task[A]
+Task(operation)
+// def now[A](a: A): Task[A]
 Task.now(operation)
+// def delay[A](a: => A): Task[A]
 Task.delay(operation)</code></pre>
             <aside class="notes">Explain that the latter will avoid using thread pool and that Task do NOT run immediately.</aside>
           </section>
           <section>
             <h3>Running task</h3>
-            <pre class="fragment"><code class="hljs scala">task.unsafePerformAsync {
+            <pre class="fragment"><code class="hljs scala">// def unsafePerformAsync(f: (Throwable \/ A) => Unit): Unit
+task.unsafePerformAsync {
   case -\/(error) => // handle left error
   case \/-(value) => // handle right value
 }
+// def unsafePerformSync: A
 task.unsafePerformSync // returns value or throws on error
+// def unsafePerformSyncAttempt: Throwable \/ A
 task.unsafePerformSyncAttempt // returns Throwable \/ Value</code></pre>
             <aside class="notes">Mention that timeout could be Duration or milliseconds in Long.</aside>
           </section>
           <section>
             <h3>Running task with timeout</h3>
-            <pre><code class="hljs scala">task.unsafePerformSyncFor(timeout)
+            <pre><code class="hljs scala">// def unsafePerformSyncFor(to: Long): A
+// def unsafePerformSyncFor(to: Duration): A
+task.unsafePerformSyncFor(timeout)
+// def unsafePerformSyncAttemptFor(to: Long): Throwable \/ A
+// def unsafePerformSyncAttemptFor(to: Duration): Throwable \/ A
 task.unsafePerformSyncAttemptFor(timeout) // Throwable \/ Value</code></pre>
           </section>
           <section>
             <h3>Running with interruptions</h3>
-            <pre><code class="hljs scala">// returns () => Unit function for canceling task
+            <pre><code class="hljs scala">// def unsafePerformAsyncInterruptibly
+//    (f: (Throwable \/ A) => Unit) : () => Unit
+// returns () => Unit function for canceling task
 task.unsafePerformAsyncInterruptibly {
   case -\/(error) => // handle left error
   case \/-(value) => // handle right value
 }
+// def unsafePerformAsyncInterruptibly
+//    (f: (Throwable \/ A) => Unit, cancel: AtomicBoolean): Unit
 // cancels task when atomicBoolean becomes true
 task.unsafePerformAsyncInterruptibly(handler, atomicBoolean)</code></pre>
           </section>
@@ -433,10 +456,12 @@ val task2 = Task(function)(es) // es service - might be implicit
 val task3 = Task.fork(task1)(es) // forks ask1 on es service</code></pre>
           </section>
           <section>
-            <h3>Exercise - calling few methods to see how they behave</h3>
+            <h3>Exercise</h3>
             <ul>
               <li class="fragment">just use few methods to fulfill tests</li>
-              <li class="fragment">take a look at tests and main to see some examples of usage</li>
+              <li class="fragment">you will be implementing a few simple methods in module <b>task</b> in package <small>io.scalawave.workshop.task</small></li>
+              <li class="fragment">you can use tests <pre><code class="hljs bash">sbt task/test</code></pre></li>
+              <li class="fragment">you can use cheetsheet as well as hints in the task itself</li>
             </ul>
             <aside class="notes">Show that by default task uses pool, which uses daemons and what are the consequences.</aside>
           </section>
