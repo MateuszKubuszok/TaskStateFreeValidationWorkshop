@@ -721,7 +721,8 @@ val (config2, b) = pipe.run(config).memoize.value // memoize</code></pre>
         <section><h2>Free</h2><section></section>
           <section>
             <h3>Why</h3>
-            <pre class="fragment"><code class="hljs scala">def getUser: User
+            <pre class="fragment"><code class="hljs scala">class User; class Preferences // some classes we defined 
+def getUser: User
 def updateUser(user: User): User
 def getUserPreferences(user: User): Set[Preference]</code></pre>
              <aside class="notes">Explain problems with straightforward approach - composing, async, etc.</aside>
@@ -738,14 +739,15 @@ def getUserPreferences(user: User): Future[Set[Preference]]</code></pre>
             <pre><code class="hljs scala">def getUser: Task[User]
 def updateUser(user: User): Task[User]
 def getUserPreferences(user: User): Task[Set[Preference]]</code></pre>
-            <aside class="notes">Explain limitations of using Task - potentially stateful calculations, still another way of tight coupling with architecture.</aside>
+            <aside class="notes">Explain limitations of using Task - potentially stateful calculations, still another way of tight coupling with some architecture.</aside>
           </section>
           <section>
             <h3>Why</h3>
             <pre><code class="hljs scala">def getUser: State[Config, User]
 def updateUser(user: User): State[Config, User]
-def getUserPreferences(user: User): State[Config, Set[Preference]]</code></pre>
-            <aside class="notes">Explain limitations of using Task - potentially stateful calculations, still another way of tight coupling with architecture.</aside>
+def getUserPreferences(user: User):
+  State[Config, Set[Preference]]</code></pre>
+            <aside class="notes">Stateless, but we lost async capabilities again.</aside>
           </section>
           <section>
             <h3>How about</h3>
@@ -755,7 +757,7 @@ def getUserPreferences(user: User): X[Set[Preference]]</code></pre>
           </section>
           <section>
             <h3>How about</h3>
-            <pre><code class="hljs scala">val getUserWithPrefs = for {
+            <pre><code class="hljs scala">val getUserWithPrefs: X[(User, Set[Preference])] = for {
   user  <- getUser
   prefs <- getUserPreferences(user)
 } yield (user, prefs)
@@ -778,10 +780,30 @@ val z: State[Config, (User, Set[Preference])] =
           </section>
           <section>
             <h3>How - natural transformation</h3>
+            <pre><code class="hljs scala">type ~>[-F[_], +G[_]] = NaturalTransformation[G, H]
+
+trait NaturalTransformation[-F[_], +G[_]] { self =>
+
+  def apply[A](fa: F[A]): G[A]
+
+  def compose[E[_]](f: E ~> F): E ~> G = new (E ~> G) {
+    def apply[A](ea: E[A]) = self(f(ea))
+  }
+  def andThen[H[_]](f: G ~> H): F ~> H = f compose self
+}
+
+def seqToSet: = new (Seq ~> Set) {
+  override apply[T](seq: Ser[T]): Set[T] = seq.toSet
+}</code></pre>
+            <aside class="notes">Explain how natural transformation works.</aside>
+          </section>
+          <section>
+            <h3>How - natural transformation</h3>
             <pre><code class="hljs scala">sealed trait UserDSL[Result]
 case object GetUser extends UserDSL[User]
 case class UpdateUser(user: User) extends UserDSL[User]
-case class GetPreferences(user: User) extends UserDSL[Set[Preferences]]
+case class GetPreferences(user: User)
+  extends UserDSL[Set[Preferences]]
 
 object FutureInterpreter extends (UserDSL ~> Future) {
   def apply[Result](command: UserDSL[Result]): Task[Result] =
@@ -797,14 +819,17 @@ object FutureInterpreter extends (UserDSL ~> Future) {
             <h3>How - elements of Free</h3>
             <p class="fragment">We have 3 cases to consider</p>
             <ol>
-              <li class="fragment">storing <b>Pure</b> value - this we can just extract (aka <b>Return</b>)</li>
+              <li class="fragment">storing <b>Pure</b> value (aka <b>Return</b>) - we can extract it</li>
               <li class="fragment"><b>Suspend</b>ing calculation - this we can interpret!</li>
               <li class="fragment">storing <b>FlatMapped</b> calculation (aka <b>Gosub</b>)</li>
             </ol>
             <pre class="fragment"><code class="hljs scala">sealed abstract class Free[S[_], A]
 case class Pure[S[_], A](a: A) extends Free[S, A]
 case class Suspend[S[_], A](a: S[A]) extends Free[S, A]
-case class FlatMapped[S[_], A0, B](a0: Free[S, A0], f0: A0 => Free[S, B]) extends Free[S, A]</code></pre>
+case class FlatMapped[S[_], A0, B](
+    a0: Free[S, A0],
+    f0: A0 => Free[S, B]
+) extends Free[S, A]</code></pre>
             <aside class="notes">Pure -> store value, Suspend -> store AST, FlatMapped -> x flatMap y = FlatMapped(x, y).</aside>
           </section>
           <section>
@@ -819,9 +844,12 @@ case class FlatMapped[S[_], A0, B](a0: Free[S, A0], f0: A0 => Free[S, B]) extend
             <h3>How - lifting to Free</h3>
             <p class="fragment">We lift our DSL to Free, it can use natural transformation to get us to the actual computation.</p>
             <pre class="fragment"><code class="hljs scala">class Ops {
-  def getUser: Free[UserDSL, User] = Free.liftF(GetUser)
-  def updateUser(user: User): Free[UserDSL, User] = Free.liftF(UpdateUser(user))
-  def getPreferences(user: User): Free[UserDSL, Set[Preference]] = Free.liftF(GetPreferences(user))
+  def getUser: Free[UserDSL, User]
+    = Free.liftF(GetUser)
+  def updateUser(user: User): Free[UserDSL, User]
+    = Free.liftF(UpdateUser(user))
+  def getPreferences(user: User): Free[UserDSL, Set[Preference]]
+    = Free.liftF(GetPreferences(user))
 }</code></pre>
             <aside class="notes">Lifting uses suspend. Why we use Ops instead of object or plain values I'll explain later.</aside>
           </section>
@@ -829,10 +857,11 @@ case class FlatMapped[S[_], A0, B](a0: Free[S, A0], f0: A0 => Free[S, B]) extend
             <h3>Finally</h3>
             <pre class="fragment"><code class="hljs scala">val ops = new Ops
 val interpreter: (UserDSL ~> Future)
-val getUserWithPrefs = for {
-  user  <- ops.getUser
-  prefs <- ops.getUserPreferences(user)
-} yield (user, prefs)
+val getUserWithPrefs: Free[UserDSL, (User, Set[Preference])] =
+  for {
+    user  <- ops.getUser
+    prefs <- ops.getUserPreferences(user)
+  } yield (user, prefs)
 
 val future: Future[(User, Set[Preference])] =
     getUserWithPrefs.foldMap(interpreter)
@@ -840,7 +869,7 @@ val future: Future[(User, Set[Preference])] =
             <aside class="notes">Lifting uses suspend.</aside>
           </section>
           <section>
-            <h3>Exercise - building 2 very simple DSLs</h3>
+            <h3>Exercise 1</h3>
             <ul>
               <li class="fragment">let us build 2 very simple DSLs and interpreters</li>
               <li class="fragment">we'll use tests with mock interpreter to check how they work</li>
