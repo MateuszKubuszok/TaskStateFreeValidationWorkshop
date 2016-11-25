@@ -513,36 +513,54 @@ Task.fork(task)(executionService)</code></pre>
         <section><h2>State</h2><section></section>
           <section>
             <h3>Why - stateful calculations</h3>
-            <pre class="fragment"><code class="hljs scala">var config = Config()
-def x(): A = { config = update(config); calculateSth() }
-def y(z: A): B = { config = update(config, z); calculateSth(z) }
-val a = x
-val b = y(a)</code></pre>
+            <pre class="fragment"><code class="hljs scala">case class Config(prefs: Set[Preference] = Set.empty)
+var config = Config(defaultPreferences)
+def reset(): Set[Preferences] = {
+  config = config.copy(Set.empty)
+  askForNewPrefs() // def askForNewPrefs(): Set[Preferences]
+}
+def setPrefsIfValid(prefs: Set[Preference]): Boolean =
+  if (areValid(prefs)) {
+    config = config.copy(config.prefs + pref)
+    updateView() // def updateView(): Boolean
+  } else false
+
+val newPrefs = reset()
+val isViewUpdated = setPrefsIfValid(newPrefs)</code></pre>
           </section>
           <section>
             <h3>Why - less stateful</h3>
-            <pre class="fragment"><code class="hljs scala">val config = Config()
-def x(config: Config): (config, A) = {
-  val config2 = update(config)
-  config2 -> calculateSth()
+            <pre class="fragment"><code class="hljs scala">val config = Config(defaultPreferences)
+def reset(config: Config): (Config, Set[Preference]) = {
+  val newConfig = config.copy(Set.empty)
+  val newPrefs = askForNewPrefs()
+  (newConfig, newPrefs)
 }
-def y(config: Config, z: A) = {
-  val config2 = update(config, z)
-  config2 -> calculateSth(z)
-}
-val (config2, a) = x(config)
-val (config3, b) = y(config2, a)</code></pre>
+def setPrefsIfValid(config: Config, newPrefs: Set[Preference]) =
+  if (areValid()) {
+    val newConfig = config.copy(newPrefs)
+    // def updateView(config: Config): Boolean
+    val isViewUpdated = updateView(config)
+    (newConfig, isViewUpdated)
+  } else (config, false)
+val (cfg2, newPrefs) = reset(config)
+val (cfg3, isViewUpdated) = setPrefsIfValid(cfg2, newPrefs)</code></pre>
           </section>
           <section>
             <h3>Why - chained?</h3>
-            <pre class="fragment"><code class="hljs scala">y.tupled(x(config)) // ??</code></pre>
+            <pre class="fragment"><code class="hljs scala">val (config2, value2) = doSth1(config, value)
+val (config3, value3) = doSth2(config2, value2)
+val (config4, value4) = doSth3(config3, value3)
+val (config5, value5) = doSth4(config4, value4)
+...</code></pre>
+            <pre class="fragment"><code class="hljs scala">setPrefsIfValid.tupled(reset(config)) // ??</code></pre>
           </section>
           <section>
             <h3>How about?</h3>
             <pre class="fragment"><code class="hljs scala">for {
-  a <- x
-  b <- y(a)
-} yield b</code></pre>
+  newPrefs      <- reset
+  isViewUpdated <- setPrefsIfValid(newPrefs)
+} yield isViewUpdated</code></pre>
           </section>
           <section>
             <h3>Creating State pipeline</h3>
@@ -672,11 +690,11 @@ def getUserPreferences(user: User): X[Set[Preference]]</code></pre>
   prefs <- getUserPreferences(user)
 } yield (user, prefs)
 
-val x: Future[(User, Set[Preferences])] =
+val x: Future[(User, Set[Preference])] =
     getUserWithPrefs.interpret(asFuture)
-val y: Task[(User, Set[Preferences])] =
+val y: Task[(User, Set[Preference])] =
     getUserWithPrefs.interpret(asTask)
-val z: State[Config, (User, Set[Preferences])] =
+val z: State[Config, (User, Set[Preference])] =
     getUserWithPrefs.interpret(asState)</code></pre>
           </section>
           <section>
