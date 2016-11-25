@@ -3,7 +3,8 @@ package io.scalawave.workshop.task
 import io.scalawave.workshop.common.Currency
 import org.specs2.mutable.Specification
 
-import scala.collection.mutable
+import scala.concurrent.{ Await, Promise }
+import scala.concurrent.duration._
 import scalaz.{ \/-, \/ }
 
 class CurrencyDataBaseHandlerSpec extends Specification {
@@ -24,16 +25,13 @@ class CurrencyDataBaseHandlerSpec extends Specification {
     "be able to run unsafe async call" in {
       // given
       val currency = Currency.EUR
-      val result = mutable.Set[Throwable \/ Double]()
-      val testTimeout = 2000
+      val resultP = Promise[Throwable \/ Double]()
 
       // when
-      CurrencyDataBaseHandler.fetchDataAsync(currency) { result += _ }
-
-      synchronized(wait(testTimeout))
+      CurrencyDataBaseHandler.fetchDataAsync(currency) { result => resultP.success(result) }
 
       // then
-      result.toSet should_== Set(\/-(0.93))
+      Await.result(resultP.future, 10 seconds) should_== \/-(0.93)
     }
 
     "be able to return plain task" in {
