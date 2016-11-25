@@ -31,7 +31,10 @@ object ScalazValidation {
    * @param double value to parse
    * @return error messages or value
    */
-  def parseDouble(double: String): ValidationNel[ParsingError, Double] = ???
+  def parseDouble(double: String): ValidationNel[ParsingError, Double] =
+    Validation.fromTryCatchNonFatal { double.trim.toDouble }
+      .leftMap { _ => NotANumber(double) }
+      .toValidationNel
 
   /**
    * Parses passed String into natural number (positive Int) or returns error message(s).
@@ -42,7 +45,11 @@ object ScalazValidation {
    * @param natural value to parse
    * @return error messages or value
    */
-  def parseNatural(natural: String): ValidationNel[ParsingError, Int] = ???
+  def parseNatural(natural: String): ValidationNel[ParsingError, Int] =
+    Validation.fromTryCatchNonFatal { natural.trim.toInt }
+      .leftMap { _ => NotANumber(natural) }
+      .ensure(NotNatural(natural)) { _ >= 0 }
+      .toValidationNel
 
   /**
    * Parses passed String into ActionType or returns error message(s).
@@ -54,7 +61,10 @@ object ScalazValidation {
    * @param actionType value to parse
    * @return error messages or value
    */
-  def parseActionType(actionType: String): ValidationNel[ParsingError, ActionType] = ???
+  def parseActionType(actionType: String): ValidationNel[ParsingError, ActionType] =
+    Validation.fromTryCatchNonFatal { ActionType.withName(actionType.trim.toLowerCase) }
+      .leftMap { _ => InvalidActionType(actionType) }
+      .toValidationNel
 
   /**
    * Parses passed String into Currency or returns error message(s).
@@ -64,7 +74,10 @@ object ScalazValidation {
    * @param currency value to parse
    * @return error messages or value
    */
-  def parseCurrency(currency: String): ValidationNel[ParsingError, Currency] = ???
+  def parseCurrency(currency: String): ValidationNel[ParsingError, Currency] =
+    Validation.fromTryCatchNonFatal { Currency.withName(currency.trim.toLowerCase) }
+      .leftMap { _ => InvalidCurrency(currency) }
+      .toValidationNel
 
   /**
    * Parses passed String into DataSource or returns error message(s).
@@ -74,7 +87,10 @@ object ScalazValidation {
    * @param dataSource value to parse
    * @return error messages or value
    */
-  def parseDataSource(dataSource: String): ValidationNel[ParsingError, DataSource] = ???
+  def parseDataSource(dataSource: String): ValidationNel[ParsingError, DataSource] =
+    Validation.fromTryCatchNonFatal { DataSource.withName(dataSource.trim.toLowerCase) }
+      .leftMap { _ => InvalidDataSource(dataSource) }
+      .toValidationNel
 
   /**
    * Parses passed Strings into Config or returns error message(s).
@@ -86,5 +102,6 @@ object ScalazValidation {
    * @param dataSource String parsed into DataSource
    * @return
    */
-  def parseConfig(accuracy: String, dataSource: String): ValidationNel[ParsingError, Config] = ???
+  def parseConfig(accuracy: String, dataSource: String): ValidationNel[ParsingError, Config] =
+    (parseNatural(accuracy) |@| parseDataSource(dataSource)) { Config }
 }
