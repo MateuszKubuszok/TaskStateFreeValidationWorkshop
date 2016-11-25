@@ -35,7 +35,6 @@ object ScalazValidation {
     Validation.fromTryCatchNonFatal { double.trim.toDouble }
       .leftMap { _ => NotANumber(double) }
       .toValidationNel
-  12.success[String]
 
   /**
    * Parses passed String into natural number (positive Int) or returns error message(s).
