@@ -29,11 +29,11 @@ object ScalazCommand {
   final case class Configure(question: String) extends ScalazCommand[Unit]
   case object Quit extends ScalazCommand[Unit]
 
-  class Ops[S[_]](implicit s0: ScalazCommand :<: S) {
+  class Ops {
 
-    def getNextAction(question: String): Free[S, ActionType] = Free.liftF(s0.inj(GetNextAction(question)))
-    def configure(question: String): Free[S, Unit] = Free.liftF(s0.inj(Configure(question)))
-    def quit: Free[S, Unit] = Free.liftF(s0.inj(Quit))
+    def getNextAction(question: String): Free[ScalazCommand, ActionType] = ???
+    def configure(question: String): Free[ScalazCommand, Unit] = ???
+    def quit: Free[ScalazCommand, Unit] = ???
   }
 }
 
@@ -46,12 +46,12 @@ object ScalazCalculation {
   final case class Convert(from: Currency, to: Currency, amount: Double) extends ScalazCalculation[Double]
   final case class DisplayValue(value: Double) extends ScalazCalculation[Unit]
 
-  class Ops[S[_]](implicit s0: ScalazCalculation :<: S) {
+  class Ops {
 
-    def getCurrency(question: String): Free[S, Currency] = Free.liftF(s0.inj(GetCurrency(question)))
-    def getAmount(question: String): Free[S, Double] = Free.liftF(s0.inj(GetAmount(question)))
-    def convert(from: Currency, to: Currency, amount: Double): Free[S, Double] =
-      Free.liftF(s0.inj(Convert(from, to, amount)))
-    def displayValue(value: Double): Free[S, Unit] = Free.liftF(s0.inj(DisplayValue(value)))
+    def getCurrency(question: String): Free[ScalazCalculation, Currency] = ???
+    def getAmount(question: String): Free[ScalazCalculation, Double] = ???
+    def convert(from: Currency, to: Currency, amount: Double): Free[ScalazCalculation, Double] =
+      ???
+    def displayValue(value: Double): Free[ScalazCalculation, Unit] = ???
   }
 }

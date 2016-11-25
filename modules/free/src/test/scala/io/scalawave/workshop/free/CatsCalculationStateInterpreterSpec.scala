@@ -9,6 +9,7 @@ import scala.collection.mutable
 
 class CatsCalculationStateInterpreterSpec extends Specification with CatsInterpreterTestParams {
 
+  /*
   "CatsCalculationStateInterpreter" should {
 
     "ask for currency till it's correct" in new Fixture {
@@ -120,4 +121,5 @@ class CatsCalculationStateInterpreterSpec extends Specification with CatsInterpr
       constantConversionRates
     )
   }
+  */
 }

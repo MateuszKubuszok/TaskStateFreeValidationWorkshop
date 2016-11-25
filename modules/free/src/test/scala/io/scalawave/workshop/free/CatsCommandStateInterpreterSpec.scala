@@ -9,6 +9,7 @@ import scala.collection.mutable
 
 class CatsCommandStateInterpreterSpec extends Specification with CatsInterpreterTestParams {
 
+  /*
   "CatsCommandStateInterpreter" should {
 
     "ask for next action till it's correct" in new Fixture {
@@ -86,4 +87,5 @@ class CatsCommandStateInterpreterSpec extends Specification with CatsInterpreter
       simpleConfigValidation
     )
   }
+  */
 }

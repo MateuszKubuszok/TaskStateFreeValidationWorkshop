@@ -10,6 +10,7 @@ import scalaz._
 
 class ScalazCalculationStateInterpreterSpec extends Specification with ScalazInterpreterTestParams {
 
+  /*
   "ScalazCalculationStateInterpreter" should {
 
     "ask for currency till it's correct" in new Fixture {
@@ -121,4 +122,5 @@ class ScalazCalculationStateInterpreterSpec extends Specification with ScalazInt
       constantConversionRates
     )
   }
+  */
 }

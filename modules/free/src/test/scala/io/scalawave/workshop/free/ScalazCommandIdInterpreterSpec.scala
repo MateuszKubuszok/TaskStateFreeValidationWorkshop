@@ -75,7 +75,7 @@ class ScalazCommandIdInterpreterSpec extends Specification with ScalazInterprete
   }
 
   trait Fixture extends Scope {
-    val ops = new Ops[ScalazCommand]
+    val ops = new Ops
     val input = mutable.Queue[String]()
     val output = mutable.MutableList[String]()
     val configStore = ConfigStore(Config(2, DataSource.DataBase))

@@ -109,7 +109,7 @@ class ScalazCalculationIdInterpreterSpec extends Specification with ScalazInterp
   }
 
   trait Fixture extends Scope {
-    val ops = new Ops[ScalazCalculation]
+    val ops = new Ops
     val input = mutable.Queue[String]()
     val output = mutable.MutableList[String]()
     val configStore = ConfigStore(Config(2, DataSource.DataBase))

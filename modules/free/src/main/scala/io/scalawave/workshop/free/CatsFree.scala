@@ -28,11 +28,11 @@ object CatsCommand {
   final case class Configure(question: String) extends CatsCommand[Unit]
   case object Quit extends CatsCommand[Unit]
 
-  class Ops[S[_]](implicit s0: CatsCommand :<: S) {
+  class Ops {
 
-    def getNextAction(question: String): Free[S, ActionType] = Free.liftF(s0.inj(GetNextAction(question)))
-    def configure(question: String): Free[S, Unit] = Free.liftF(s0.inj(Configure(question)))
-    def quit: Free[S, Unit] = Free.liftF(s0.inj(Quit))
+    def getNextAction(question: String): Free[CatsCommand, ActionType] = ???
+    def configure(question: String): Free[CatsCommand, Unit] = ???
+    def quit: Free[CatsCommand, Unit] = ???
   }
 }
 
@@ -45,12 +45,12 @@ object CatsCalculation {
   final case class Convert(from: Currency, to: Currency, amount: Double) extends CatsCalculation[Double]
   final case class DisplayValue(value: Double) extends CatsCalculation[Unit]
 
-  class Ops[S[_]](implicit s0: CatsCalculation :<: S) {
+  class Ops {
 
-    def getCurrency(question: String): Free[S, Currency] = Free.liftF(s0.inj(GetCurrency(question)))
-    def getAmount(question: String): Free[S, Double] = Free.liftF(s0.inj(GetAmount(question)))
-    def convert(from: Currency, to: Currency, amount: Double): Free[S, Double] =
-      Free.liftF(s0.inj(Convert(from, to, amount)))
-    def displayValue(value: Double): Free[S, Unit] = Free.liftF(s0.inj(DisplayValue(value)))
+    def getCurrency(question: String): Free[CatsCalculation, Currency] = ???
+    def getAmount(question: String): Free[CatsCalculation, Double] = ???
+    def convert(from: Currency, to: Currency, amount: Double): Free[CatsCalculation, Double] =
+      ???
+    def displayValue(value: Double): Free[CatsCalculation, Unit] = ???
   }
 }

@@ -19,11 +19,7 @@ final class CatsCommandStateInterpreter(
 
   import CatsCommand._
 
-  override def apply[A](fa: CatsCommand[A]): CatsConfigState[A] = fa match {
-    case GetNextAction(question) => State.pure[Config, ActionType](getNextAction(question))
-    case Configure(question)     => State.set(configure(question))
-    case Quit                    => State.pure[Config, Unit](quit())
-  }
+  override def apply[A](fa: CatsCommand[A]): CatsConfigState[A] = ???
 
   @tailrec
   private def getNextAction(question: String): ActionType = {

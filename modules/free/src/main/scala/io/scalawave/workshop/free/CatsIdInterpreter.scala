@@ -20,11 +20,7 @@ final class CatsCommandIdInterpreter(
 
   import CatsCommand._
 
-  override def apply[A](fa: CatsCommand[A]): Id[A] = fa match {
-    case GetNextAction(question) => getNextAction(question)
-    case Configure(question)     => configStore.config = configure(question)
-    case Quit                    => quit()
-  }
+  override def apply[A](fa: CatsCommand[A]): Id[A] = ???
 
   @tailrec
   private def getNextAction(question: String): ActionType = {

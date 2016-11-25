@@ -10,6 +10,7 @@ import Scalaz._
 
 class ScalazProgramSpec extends Specification {
 
+  /*
   object Operations extends Enumeration {
     val ConfigChanged, Quit = Value
   }
@@ -112,4 +113,5 @@ class ScalazProgramSpec extends Specification {
       operations.toList should_== List(Operations.ConfigChanged, Operations.ConfigChanged, Operations.Quit)
     }
   }
+  */
 }

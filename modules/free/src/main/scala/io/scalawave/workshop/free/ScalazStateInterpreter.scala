@@ -17,11 +17,7 @@ final class ScalazCommandStateInterpreter(
 
   import ScalazCommand._
 
-  override def apply[A](fa: ScalazCommand[A]): ScalazConfigState[A] = fa match {
-    case GetNextAction(question) => State.state[Config, ActionType](getNextAction(question))
-    case Configure(question)     => State.put(configure(question))
-    case Quit                    => State.state[Config, Unit](quit())
-  }
+  override def apply[A](fa: ScalazCommand[A]): ScalazConfigState[A] = ???
 
   @tailrec
   private def getNextAction(question: String): ActionType = {
@@ -62,12 +58,7 @@ final class ScalazCalculationStateInterpreter(
 
   import ScalazCalculation._
 
-  override def apply[A](fa: ScalazCalculation[A]): ScalazConfigState[A] = fa match {
-    case GetCurrency(question)     => State.state[Config, Currency](getCurrency(question))
-    case GetAmount(question)       => State.state[Config, Double](getAmount(question))
-    case Convert(from, to, amount) => State.gets[Config, Double](convert(_, from, to, amount))
-    case DisplayValue(value)       => State.gets[Config, Unit](displayValue(_, value))
-  }
+  override def apply[A](fa: ScalazCalculation[A]): ScalazConfigState[A] = ???
 
   @tailrec
   private def getCurrency(question: String): Currency = {

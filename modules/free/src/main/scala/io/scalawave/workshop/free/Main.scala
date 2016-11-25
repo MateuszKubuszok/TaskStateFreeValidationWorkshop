@@ -43,7 +43,7 @@ object Main {
     )
     val interpreter = commandInterpreter or calculationInterpreter
 
-    CatsProgram.program.foldMap(interpreter)
+    // CatsProgram.program.foldMap(interpreter)
   }
 
   def scalazIdTest(): Unit = {
@@ -69,6 +69,6 @@ object Main {
     )
     val interpreter = commandInterpreter :+: calculationInterpreter
 
-    ScalazProgram.program.foldMap(interpreter)
+    // ScalazProgram.program.foldMap(interpreter)
   }
 }

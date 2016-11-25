@@ -26,8 +26,7 @@ object CurrencyDataBaseHandler extends (Currency => Double) {
    * @param currency which USD exchange ratio we would like to obtain
    * @param callback function to call on completion
    */
-  def fetchDataAsync(currency: Currency)(callback: Throwable \/ Double => Unit): Unit =
-    fetchDataTask(currency).unsafePerformAsync(callback)
+  def fetchDataAsync(currency: Currency)(callback: Throwable \/ Double => Unit): Unit = ???
 
   /** Fetches data and waits for the result.
    *
@@ -39,19 +38,14 @@ object CurrencyDataBaseHandler extends (Currency => Double) {
    * @param currency which USD exchange ratio we would like to obtain
    * @return USD to currency exchange ratio
    */
-  def fetchDataSync(currency: Currency): Double = fetchDataTask(currency).unsafePerformSync
+  def fetchDataSync(currency: Currency): Double = ???
 
   /** Creates Task which will attempt to fetch data until it succeeds.
    *
    * @param currency which USD exchange ratio we would like to obtain
    * @return Task fetching USD to currency exchange ratio
    */
-  def fetchDataTask(currency: Currency): Task[Double] = {
-    val task = Task(wrapperForDefaultValue(currency))
-    task.handleWith {
-      case DBError => fetchDataTask(currency)
-    }
-  }
+  def fetchDataTask(currency: Currency): Task[Double] = ???
 
   private val wrapperForDefaultValue: Currency => Double = {
     case USD                => 1.0

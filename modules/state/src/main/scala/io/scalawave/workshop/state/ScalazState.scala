@@ -23,10 +23,7 @@ object ScalazState {
    * @param to conversion to
    * @return state -> calculated exchange rate
    */
-  def getExchangeRate(from: Currency, to: Currency): State[CurrencyExchangeRates, Option[Double]] =
-    State[CurrencyExchangeRates, Option[Double]] { state =>
-      state -> state.getRate(from, to)
-    }
+  def getExchangeRate(from: Currency, to: Currency): State[CurrencyExchangeRates, Option[Double]] = ???
 
   /**
    * Preserves state and returns USD exchange rate.
@@ -36,10 +33,7 @@ object ScalazState {
    * @param to conversion to
    * @return state -> exchange rate
    */
-  def getDollarExchangeRate(to: Currency): State[CurrencyExchangeRates, Option[Double]] =
-    State[CurrencyExchangeRates, Option[Double]] { state =>
-      state -> state.dollarExchangeRates.get(to)
-    }
+  def getDollarExchangeRate(to: Currency): State[CurrencyExchangeRates, Option[Double]] = ???
 
   /**
    * Updates state with new USD exchange rate and returns old rate.
@@ -50,10 +44,5 @@ object ScalazState {
    * @param rate exchange rate
    * @return new state -> old exchange rate
    */
-  def setDollarExchangeRate(to: Currency, rate: Double): State[CurrencyExchangeRates, Option[Double]] =
-    State[CurrencyExchangeRates, Option[Double]] { oldState =>
-      val oldValue = oldState.dollarExchangeRates.get(to)
-      val newState = oldState.copy(oldState.dollarExchangeRates + (to -> rate))
-      newState -> oldValue
-    }
+  def setDollarExchangeRate(to: Currency, rate: Double): State[CurrencyExchangeRates, Option[Double]] = ???
 }

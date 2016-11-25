@@ -14,6 +14,7 @@ import io.scalawave.workshop.common.ActionType
 object CatsProgram {
 
   type Program[A] = Coproduct[CatsCommand, CatsCalculation, A]
+  /*
   val commands = new CatsCommand.Ops[Program]
   val calculations = new CatsCalculation.Ops[Program]
 
@@ -39,4 +40,5 @@ object CatsProgram {
     _ <- commands.configure("Set initial configuration (amount, data source)")
     _ <- mainLoop
   } yield ()
+  */
 }

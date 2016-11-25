@@ -9,6 +9,7 @@ import scala.collection.mutable
 
 class ScalazCommandStateInterpreterSpec extends Specification with ScalazInterpreterTestParams {
 
+  /*
   "ScalazCommandIdInterpreter" should {
 
     "ask for next action till it's correct" in new Fixture {
@@ -86,4 +87,5 @@ class ScalazCommandStateInterpreterSpec extends Specification with ScalazInterpr
       simpleConfigValidation
     )
   }
+  */
 }
