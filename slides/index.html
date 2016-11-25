@@ -872,10 +872,10 @@ val future: Future[(User, Set[Preference])] =
             <h3>Exercise 1</h3>
             <ul>
               <li class="fragment">let us build 2 very simple DSLs and interpreters</li>
-              <li class="fragment">exercise is inside module <b>free</b> in package <b>io.scalawave.workshop.free</b></li>
+              <li class="fragment">exercise is inside module <b>free</b> in package <small>io.scalawave.workshop.free</small></li>
               <li class="fragment">you can use tests for checking if things works <pre><code class="hljs bash">sbt free/test</code></pre></li>
-              <li class="fragment">boilerplate part is already implemented</li>
               <li class="fragment">your task will just concern lifting case classes and interpreting them</li>
+              <li class="fragment">look only at files: <small>CatsFree.scala, CatsIdInterpreter.scala</small> or <small>ScalazFree.scala, ScalazIdInterpreter.scala</small></li>
             </ul>
           </section>
           <section>
@@ -994,6 +994,7 @@ val ops2 = new Command.Ops[Program]</code></pre>
               <li class="fragment">exercise is inside module <b>free</b> in package <b>io.scalawave.workshop.free</b></li>
               <li class="fragment">you can use tests for checking if things works <pre><code class="hljs bash">sbt free/test</code></pre></li>
               <li class="fragment">you only have to change signature of Ops classes and how they are called in code</li>
+              <li class="fragment">look only at files: <small>CatsFree.scala, CatsIdInterpreter.scala</small> or <small>ScalazFree.scala, ScalazIdInterpreter.scala</small></li>
             </ul>
           </section>
           <section>

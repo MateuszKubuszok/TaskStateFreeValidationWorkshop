@@ -19,12 +19,6 @@ import scalaz.{ :<:, Free }
   * something resembling our intended program. Our first attempt will use Id - we can think of it as a transparent
   * wrapper type. It can be used each time, code expects parametrized type and we don't need to wrap values int anything
   * in particular.
-  *
-  * 3. Stateful free
-  *
-  * As we saw in previous exercise, we have a problem when interpreter is stateful and contains some state that should
-  * be shared with another container. But we already learnt a functional way of handling that. So here we'll try to
-  * create an interpreter that will let us handle state manipulation in a nice, functional way.
   */
 
 sealed trait ScalazCommand[Result]
