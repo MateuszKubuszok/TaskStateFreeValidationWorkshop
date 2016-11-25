@@ -793,7 +793,7 @@ trait NaturalTransformation[-F[_], +G[_]] { self =>
 }
 
 def seqToSet: = new (Seq ~> Set) {
-  override apply[T](seq: Ser[T]): Set[T] = seq.toSet
+  override apply[T](seq: Seq[T]): Set[T] = seq.toSet
 }</code></pre>
             <aside class="notes">Explain how natural transformation works.</aside>
           </section>
