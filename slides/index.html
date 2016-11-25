@@ -872,30 +872,57 @@ val future: Future[(User, Set[Preference])] =
             <h3>Exercise 1</h3>
             <ul>
               <li class="fragment">let us build 2 very simple DSLs and interpreters</li>
-              <li class="fragment">we'll use tests with mock interpreter to check how they work</li>
+              <li class="fragment">exercise is inside module <b>free</b> in package <b>io.scalawave.workshop.free</b></li>
+              <li class="fragment">you can use tests for checking if things works <pre><code class="hljs bash">sbt free/test</code></pre></li>
               <li class="fragment">boilerplate part is already implemented</li>
+              <li class="fragment">your task will just concern lifting case classes and interpreting them</li>
             </ul>
           </section>
           <section>
+            <p>Lifting</p>
+            <pre><code class="hljs scala">sealed trait Dsl[Result]
+case class DslElement(x: A, y: B) extends Dsl[C]
+
+def lifted(a: A, y: B): Free[Dsl, C] =
+  Free.liftF(DslElement(a, b))</code></pre>
+            <p>Interpreting</p>
+            <pre><code class="hljs scala">val interpreter: (Dsl ~> Future) = new (Dsl ~> Future) {
+  override def apply[Result](dsl: Dsl[Result]) = dsl match {
+    case DslElement(a, b) => // something returning C
+  }
+}</code></pre>
+          </section>
+          <section>
             <h3>Problem - how to "merge" 2 DSLs?</h3>
-            <pre class="fragment"><code class="hljs scala">sealed trait Command[Result]
+            <pre class="fragment"><code class="hljs scala">// in exercise: CatsCommand and ScalazCommand
+sealed trait Command[Result]
 object Command {
   ...
   class Ops {
-    def getNextAction(question: String): Free[Command, ActionType] = ...
-    def configure(question: String): Free[Command, Unit] = ...
-    def quit: Free[Command, Unit] = ...
+    def getNextAction(question: String):
+      Free[Command, ActionType] = ...
+    def configure(question: String):
+      Free[Command, Unit] = ...
+    def quit:
+      Free[Command, Unit] = ...
   }
-}
-
+}</code></pre>
+          </section>
+          <section>
+            <h3>Problem - how to "merge" 2 DSLs?</h3>
+            <pre><code class="hljs scala">// in exercise: CatsCalculation and ScalazCalculation
 sealed trait Calculation[Result]
 object Calculation {
   ...
   class Ops {
-    def getCurrency(question: String): Free[Calculation, Currency] = ...
-    def getAmount(question: String): Free[Calculation, Double] = ...
-    def convert(from: Currency, to: Currency, amount: Double): Free[Calculation, Double] = ...
-    def displayValue(value: Double): Free[Calculation, Unit] = ...
+    def getCurrency(question: String):
+      Free[Calculation, Currency] = ...
+    def getAmount(question: String):
+      Free[Calculation, Double] = ...
+    def convert(from: Currency, to: Currency, amount: Double):
+      Free[Calculation, Double] = ...
+    def displayValue(value: Double):
+      Free[Calculation, Unit] = ...
   }
 }</code></pre>
           </section>
@@ -906,10 +933,26 @@ val interpreter: (Command or Calculation) ~> Future</code></pre>
           </section>
           <section>
             <h3>Coproduct and inject</h3>
+            <p class="fragment">Coproduct</p>
+            <pre class="fragment"><code class="hljs scala">case class Coproduct[F[_], G[_], A](run: F[A] \/ G[A])
+
+type Program[Result] = Coproduct[Command, Calculation, Result]</code></pre>
+            <p class="fragment">Inject</p>
+            <pre class="fragment"><code class="hljs scala">def getNextAction[S[_]]
+      (question: String)
+      (implicit s0: Command :<: S): Free[S, ActionType] =
+              Free.liftF(s0.inj(GetNextAction(question)))
+
+val asCommand: Free[Command, C] = getNextAction[Command](a, b)
+val asProgram: Free[Program, C] = getNextAction[Program](a, b)</code></pre>
+          </section>
+          <section>
+            <h3>Coproduct and inject</h3>
             <pre class="fragment"><code class="hljs scala">object Command {
   ...
   class Ops[S[_]](implicit s0: Command :<: S) {
-    def getNextAction(question: String): Free[Command, ActionType] = 
+    def getNextAction(question: String):
+        Free[S, ActionType] = 
       Free.liftF(s0.inj(GetNextAction(question)))
   }
 }
@@ -937,52 +980,72 @@ val ops2 = new Command.Ops[Program]</code></pre>
   }
 
   implicit class ComposeInterpreters[F[_], H[_]](f: F ~> H) {
-    def :+:[G[_]](g: G ~> H): (G :+: F)#λ ~> H = new ((G :+: F)#λ ~> H) {
-      def apply[A](fa: (G :+: F)#λ[A]) = fa.run.fold(g, f)
-    }
+    def :+:[G[_]](g: G ~> H): (G :+: F)#λ ~> H =
+      new ((G :+: F)#λ ~> H) {
+        def apply[A](fa: (G :+: F)#λ[A]) = fa.run.fold(g, f)
+      }
   }
 }</code></pre>
            </section>
           <section>
-            <h3>Exercise - updating DSLs to made them mergable</h3>
+            <h3>Exercise 2</h3>
             <ul>
-              <li class="fragment">use Coproduct and inject to update existing DSLs</li>
+              <li class="fragment">lets update our DSLs to make them "mergable"</li>
+              <li class="fragment">exercise is inside module <b>free</b> in package <b>io.scalawave.workshop.free</b></li>
+              <li class="fragment">you can use tests for checking if things works <pre><code class="hljs bash">sbt free/test</code></pre></li>
+              <li class="fragment">you only have to change signature of Ops classes and how they are called in code</li>
             </ul>
+          </section>
+          <section>
+            <p>before</p>
+            <pre><code class="hljs scala">class Ops {
+  def getNextAction(question: String):
+      Free[Command, ActionType] = 
+    Free.liftF(GetNextAction(question))
+}
+
+val ops = new Ops</code></pre>
+            <p>after</p>
+            <pre><code class="hljs scala">class Ops[S[_]](implicit s0: Command :<: S) {
+  def getNextAction(question: String):
+      Free[S, ActionType] = 
+    Free.liftF(s0.inj(GetNextAction(question)))
+}
+
+val ops = new Ops[Command] // or new Ops[Program]</code></pre>
           </section>
           <section>
             <h3>Can we get rid of mutable state within interpreters?</h3>
             <pre class="fragment"><code class="hljs scala">final class CommandIdInterpreter(...) extends (Command ~> Id) {
 
-  // no state is actually stored within interpreter right now!
+  // configStore is mutable!
   override def apply[A](fa: Command[A]): Id[A] = fa match {
-    case GetNextAction(question) => getNextAction(question)
-    case Configure(question)     => configStore.config = configure(question) // !!!
-    case Quit                    => quit()
+    case GetNextAction(question) =>
+      getNextAction(question)
+    case Configure(question) =>
+      configStore.config = configure(question) // !!!
+    case Quit =>
+      quit()
   }
-
-  ...
 }</code></pre>
           </section>
           <section>
             <h3>How about?</h3>
             <pre class="fragment"><code class="hljs scala">type ConfigState[A] = State[Config, A]
-final class CommandIdInterpreter(...) extends (Command ~> ConfigState) {
+final class CommandIdInterpreter(...)
+    extends (Command ~> ConfigState) {
 
-  // configStore is mutable!
-  override def apply[A](fa: Command[A]): ConfigState[A] = fa match {
-    case GetNextAction(question) => State.state[Config, ActionType](getNextAction(question))
-    case Configure(question)     => State.put(configure(question))
-    case Quit                    => State.state[Config, Unit](quit())
-  }
-
-  ...
+  // no state is actually stored within interpreter right now!
+  override def apply[A](fa: Command[A]): ConfigState[A] =
+    fa match {
+      case GetNextAction(question) =>
+        State.state[Config, ActionType](getNextAction(question))
+      case Configure(question) =>
+        State.put(configure(question))
+      case Quit =>
+        State.state[Config, Unit](quit())
+    }
 }</code></pre>
-          </section>
-          <section>
-            <h3>Exercise - making State interpreters</h3>
-            <ul>
-              <li class="fragment">implement state interpreter</li>
-            </ul>
           </section>
           <section>
             <h3>Summary</h3>
