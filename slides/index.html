@@ -537,7 +537,7 @@ def reset(config: Config): (Config, Set[Preference]) = {
   (newConfig, newPrefs)
 }
 def setPrefsIfValid(config: Config, newPrefs: Set[Preference]) =
-  if (areValid()) {
+  if (areValid(newPrefs)) {
     val newConfig = config.copy(newPrefs)
     // def updateView(config: Config): Boolean
     val isViewUpdated = updateView(config)
@@ -563,17 +563,42 @@ val (config5, value5) = doSth4(config4, value4)
 } yield isViewUpdated</code></pre>
           </section>
           <section>
+            <h3>State</h3>
+            <pre class="fragment"><code class="hljs scala">case class State[S, A](val runF: S => (S, A)]) {
+
+  def run(init: S): (S, A) = runF(init)
+
+  def flatMap[B](fas: A => State[S, B]): State[S, B] =
+    State[S,B](s => runF(s) match { case (s2, a) =>
+      fas(a).run(s2)
+    })
+}</code></pre>
+            <aside class="notes">Mention that it is a little bit more complex in both Cats and Scalaz.</aside>
+          </section>
+          <section>
             <h3>Creating State pipeline</h3>
-            <pre class="fragment"><code class="hljs scala">def x = State[Config, A] { case (c, a) =>
-  update(c) -> calculateSth() // (Config, A)
+            <pre class="fragment"><code class="hljs scala">def reset = State[Config, Set[Preference]] { config =>
+    val newConfig = config.copy(newPrefs)
+    // def askForNewPrefs(): Set[Preferences]
+    val newPrefs = askForNewPrefs()
+    (newConfig, newPrefs)
 }
-def y(z: A) = State[Config, B] { case (c, a) =>
-  update(c, z) -> calculateSth(z) // (Config, B)
-}
-val pipe = for {
-  a <- x
-  b <- y(a)
-} yield b // just a pipe! no effects yet!</code></pre>
+def setPrefsIfValid(newPrefs: Set[Preference]) =
+  State[Config, Boolean] { config =>
+    if (areValid(newPrefs)) {
+      val newConfig = config.copy(newPrefs)
+      // def updateView(config: Config): Boolean
+      val isViewUpdated = updateView(config)
+      (newConfig, isViewUpdated)
+    } else (config, false)
+  }</code></pre>
+          </section>
+          <section>
+            <h3>Creating State pipeline</h3>
+            <pre class="fragment"><code class="hljs scala">val resetAndTryToUpdateView: State[Config, Boolean] = for {
+  newPrefs      <- reset
+  isViewUpdated <- setPrefsIfValid(newPrefs)
+} yield isViewUpdated // just a pipe! no effects yet!</code></pre>
           </section>
           <section>
             <h3>Running State pipeline</h3>
