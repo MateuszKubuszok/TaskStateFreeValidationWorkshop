@@ -634,7 +634,7 @@ val (config2, b) = pipe.run(config).memoize.value // memoize</code></pre>
                 <tr>
                   <td>s1 => (s2, ())</td>
                   <td>modify(s1 => s2)</td>
-                  <td>modify(s1 => s2)</td>
+                  <td>imap(s1 => s2)</td>
                 </tr>
                 <tr>
                   <td>s => (s, f(s))</td>
