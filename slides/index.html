@@ -360,10 +360,11 @@ def toValidationNel[EE >: E, SS >: S]: ValidationNel[EE, SS]</code></pre>
           <section>
             <h4>Monadic laws</h4>
             <ul>
-              <li class="fragment"><b>left identity</b> - aka left unit law<pre><code class="hljs scala">unit(value).map(func) == func(value)</code></pre></li>
+              <li class="fragment"><b>left identity</b> - aka left unit law<pre><code class="hljs scala">unit(value).flatMap(func) == func(value)</code></pre></li>
               <li class="fragment"><b>right identity</b> - aka left unit law<pre><code class="hljs scala">mValue.flatMap(unit) == mValue</code></pre></li>
               <li class="fragment"><b>associativity</b> - how we put "parenthesis" does not matter<pre><code class="hljs scala">m.flatMap(f1).flatMap(f2) == m.flatMap(v=> f1(v).flatMap(f2))</code></pre></li>
             </ul>
+            <aside class="notes">Explain that Future (and Try) fails to fulfill left identity law, so it is not a monad, though it is enough to make for comprehension work.</aside>
           </section>
           <section>
             <h3>Comparison</h3>
@@ -456,6 +457,12 @@ val task2 = Task(function)(es) // es service - might be implicit
 val task3 = Task.fork(task1)(es) // forks ask1 on es service</code></pre>
           </section>
           <section>
+            <h3>Handling errors</h3>
+            <pre><code class="hljs scala">// def handle[B>:A](f: PartialFunction[Throwable,B]): Task[B]
+val task2 = task.handle()
+val task3 = task.handleWith</code></pre>
+          </section>
+          <section>
             <h3>Exercise</h3>
             <ul>
               <li class="fragment">just use few methods to fulfill tests</li>
@@ -464,6 +471,34 @@ val task3 = Task.fork(task1)(es) // forks ask1 on es service</code></pre>
               <li class="fragment">you can use cheetsheet as well as hints in the task itself</li>
             </ul>
             <aside class="notes">Show that by default task uses pool, which uses daemons and what are the consequences.</aside>
+          </section>
+          <section>
+            <pre style="font-size: 0.30em"><code class="hljs scala">// def apply[A](a: => A)
+//             (implicit pool: ExecutorService =
+//                  Strategy.DefaultExecutorService): Task[A]
+Task(operation)
+// def now[A](a: A): Task[A]
+Task.now(operation)
+// def delay[A](a: => A): Task[A]
+Task.delay(operation)
+// def unsafePerformSyncFor(to: Long): A
+// def unsafePerformSyncFor(to: Duration): A
+task.unsafePerformSyncFor(timeout)
+// def unsafePerformSyncAttemptFor(to: Long): Throwable \/ A
+// def unsafePerformSyncAttemptFor(to: Duration): Throwable \/ A
+task.unsafePerformSyncAttemptFor(timeout) // Throwable \/ Value
+// def unsafePerformAsyncInterruptibly
+//    (f: (Throwable \/ A) => Unit) : () => Unit
+task.unsafePerformAsyncInterruptibly {
+  case -\/(error) => // handle left error
+  case \/-(value) => // handle right value
+}
+// def unsafePerformAsyncInterruptibly
+//    (f: (Throwable \/ A) => Unit, cancel: AtomicBoolean): Unit
+task.unsafePerformAsyncInterruptibly(handler, atomicBoolean)
+// def fork[A](a: => Task[A])
+//            (implicit pool: ExecutorService = Strategy.DefaultExecutorService): Task[A]
+Task.fork(task)(executionService)</code></pre>
           </section>
           <section>
             <h3>Summary</h3>
