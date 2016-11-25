@@ -612,7 +612,7 @@ val (config2, b) = pipe.run(config).memoize.value // memoize</code></pre>
           </section>
           <section>
             <h3>Other useful methods</h3>
-            <table>
+            <table style="font-size: 0.75em">
               <thead>
                 <tr>
                   <th>used for</th>
@@ -623,23 +623,23 @@ val (config2, b) = pipe.run(config).memoize.value // memoize</code></pre>
               <tbody>
                 <tr>
                   <td>s1 => (s2, a)</td>
-                  <td>apply</td>
-                  <td>apply</td>
+                  <td>apply(s1 => (s2, a))</td>
+                  <td>apply(s1 => (s2, a))</td>
                 </tr>
                 <tr>
                   <td>s => (s, a)</td>
-                  <td>pure</td>
-                  <td>state</td>
+                  <td>pure(a)</td>
+                  <td>state(a)</td>
                 </tr>
                 <tr>
                   <td>s1 => (s2, ())</td>
-                  <td>modify</td>
-                  <td>modify</td>
+                  <td>modify(s1 => s2)</td>
+                  <td>modify(s1 => s2)</td>
                 </tr>
                 <tr>
                   <td>s => (s, f(s))</td>
-                  <td>inspect</td>
-                  <td>gets</td>
+                  <td>inspect(s => a)</td>
+                  <td>gets(s => a)</td>
                 </tr>
                 <tr>
                   <td>s => (s, s)</td>
@@ -648,19 +648,64 @@ val (config2, b) = pipe.run(config).memoize.value // memoize</code></pre>
                 </tr>
                 <tr>
                   <td>_ => (s, ())</td>
-                  <td>put</td>
-                  <td>put</td>
+                  <td>put(s)</td>
+                  <td>put(s)</td>
                 </tr>
               </tbody>
             </table>
             <aside class="notes">This concerns State.x methods of the companion objects.</aside>
           </section>
           <section>
-            <h3>Exercise - calling basic methods to see how they behave</h3>
+            <h3>Exercise</h3>
             <ul>
-              <li class="fragment">well create very simple State functions</li>
-              <li class="fragment">again, we can look at tests and main to see how they perform</li>
+              <li class="fragment">we'll create a few very simple State functions</li>
+              <li class="fragment">exercises are inside module <b>state</b> in package <b>io.scalawave.workshop.state</b></li>
+              <li class="fragment">you can run tests for checking your implementation <pre><code class="hljs bash">sbt state/test</code></pre></li>
+              <li class="fragment">feel free to use cheatsheets</li>
             </ul>
+          </section>
+          <section>
+            <table style="font-size: 0.9em">
+              <thead>
+                <tr>
+                  <th>used for</th>
+                  <th>Cats</th>
+                  <th>Scalaz</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>s1 => (s2, a)</td>
+                  <td>apply(s1 => (s2, a))</td>
+                  <td>apply(s1 => (s2, a))</td>
+                </tr>
+                <tr>
+                  <td>s => (s, a)</td>
+                  <td>pure(a)</td>
+                  <td>state(a)</td>
+                </tr>
+                <tr>
+                  <td>s1 => (s2, ())</td>
+                  <td>modify(s1 => s2)</td>
+                  <td>modify(s1 => s2)</td>
+                </tr>
+                <tr>
+                  <td>s => (s, f(s))</td>
+                  <td>inspect(s => a)</td>
+                  <td>gets(s => a)</td>
+                </tr>
+                <tr>
+                  <td>s => (s, s)</td>
+                  <td>get</td>
+                  <td>get/init</td>
+                </tr>
+                <tr>
+                  <td>_ => (s, ())</td>
+                  <td>put(s)</td>
+                  <td>put(s)</td>
+                </tr>
+              </tbody>
+            </table>
           </section>
           <section>
             <h3>Summary</h3>

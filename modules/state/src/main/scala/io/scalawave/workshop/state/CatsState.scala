@@ -16,6 +16,8 @@ object CatsState {
   /**
    * Preserves state and returns calculated exchange rate.
    *
+   * Hint: we don't need to modify state here, but we need to extract some value from it.
+   *
    * @param from conversion from
    * @param to conversion to
    * @return state -> calculated exchange rate
@@ -28,6 +30,8 @@ object CatsState {
   /**
    * Preserves state and returns USD exchange rate.
    *
+   * Hint: we don't need to modify state here, but we need to extract some value from it.
+   *
    * @param to conversion to
    * @return state -> exchange rate
    */
@@ -38,6 +42,8 @@ object CatsState {
 
   /**
    * Updates state with new USD exchange rate and returns old rate.
+   *
+   * Hint: we want to both update state and retrive some value - there are several good ways to do it ;)
    *
    * @param to conversion to
    * @param rate exchange rate
