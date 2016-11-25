@@ -62,12 +62,7 @@ final class CatsCalculationIdInterpreter(
 
   import CatsCalculation._
 
-  override def apply[A](fa: CatsCalculation[A]): Id[A] = fa match {
-    case GetCurrency(question)     => getCurrency(question)
-    case GetAmount(question)       => getAmount(question)
-    case Convert(from, to, amount) => convert(configStore.config, from, to, amount)
-    case DisplayValue(value)       => displayValue(configStore.config, value)
-  }
+  override def apply[A](fa: CatsCalculation[A]): Id[A] = ???
 
   @tailrec
   private def getCurrency(question: String): Currency = {
