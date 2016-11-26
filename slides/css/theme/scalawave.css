@@ -19,6 +19,11 @@ h3 {
 h4 {
   word-spacing: 12px; }
 
+.code-like {
+  font-family: 'Source Code Pro', sans-serif !important;
+  font-size: 0.8em !important;
+  font-weight: bold !important; }
+
 /*********************************************
  * GLOBAL STYLES
  *********************************************/

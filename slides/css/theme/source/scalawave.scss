@@ -66,7 +66,11 @@ $selectionBackgroundColor: $magenta;
 // 	@include radial-gradient( rgba($base3,1), rgba(lighten($base3, 20%),1) );
 // }
 
-
+.code-like {
+	font-family: 'Source Code Pro', sans-serif !important;
+	font-size: 0.8em !important;
+	font-weight: bold !important;
+}
 
 // Theme template ------------------------------
 @import "../template/theme";

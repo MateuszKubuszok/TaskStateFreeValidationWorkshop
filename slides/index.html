@@ -51,8 +51,8 @@
             <ul>
               <li class="fragment">error flags/values</li>
               <li class="fragment">exceptions</li>
-              <li class="fragment"><b>Either</b></li>
-              <li class="fragment">exclusive or: <b>Xor</b>, disjunction <b>\/</b></li>
+              <li class="fragment"><span class="code-like">Either</span></li>
+              <li class="fragment">exclusive or: <span class="code-like">Xor</span>, disjunction <span class="code-like">\/</span></li>
             </ul>
             <aside class="notes">Mention that from Scala 2.12 Xor is a type alias for Either - before it was a separate implementation because Either was not biased.</aside>
           </section>
@@ -82,7 +82,7 @@
           <section>
             <h3>Functors</h3>
             <ul>
-              <li class="fragment"><b>map</b> takes a functor and function transforming its contents, and apply it to all elements contained in functor</li>
+              <li class="fragment"><span class="code-like">map</span> takes a functor and function transforming its contents, and apply it to all elements contained in functor</li>
             </ul>
             <pre class="fragment"><code class="hljs scala">trait MyFunctor[T] {
   def map[U](func: T => U): MyFunctor[U]
@@ -123,9 +123,11 @@ val apr: MyApplicative[Int] = apv.ap(apf)</code></pre>
             <h3>Applicative laws</h3>
             <ul>
               <li class="fragment">identity<pre><code class="hljs scala">applicative.ap(MyApplicative(identity))</code></pre></li>
-              <li class="fragment">homomorphism<pre><code class="hljs scala">MyApplicative(value).ap(MyApplicative(funx)) == MyApplicative(func(value))</code></pre></li>
-              <li class="fragment">interchange<pre><code class="hljs scala">MyApplicative(value).ap(func) == MyApplicative(f => f(value)).ap(func)</code></pre></li>
-              <li class="fragment"><b>ap</b> is associative - composing just like plain functions</li>
+              <li class="fragment">homomorphism<pre><code class="hljs scala">MyApplicative(value).ap(MyApplicative(func))
+  == MyApplicative(func(value))</code></pre></li>
+              <li class="fragment">interchange<pre><code class="hljs scala">MyApplicative(value).ap(func)
+  == MyApplicative(f => f(value)).ap(func)</code></pre></li>
+              <li class="fragment"><span class="code-like">ap</span> is associative - composing like plain functions</li>
             </ul>
           </section>
           <section>
@@ -290,7 +292,7 @@ def fromTryCatchNonFatal[A](f: => A): Validation[Throwable, A]
             <h3>Exercise</h3>
             <ul>
               <li class="fragment">we'll try to implement a few simple validations -choose either Cats or Scalaz version</li>
-              <li class="fragment">functions we will implement are placed in module <b>validation</b>, in package <small>io.scalawave.workshop.validation</small></li>
+              <li class="fragment">functions we will implement are placed in module <span class="code-like">validation</span>, in package <span class="code-like" style="font-size: 0.6em !important">io.scalawave.workshop.validation</span></li>
               <li class="fragment">you can use test to guide you during implementation - run them with<pre><code class="hljs bash">sbt validation/test</code></pre></li>
               <li class="fragment">use cheatsheet as well as hints inside the exercise</li>
             </ul>
@@ -331,8 +333,8 @@ def toValidationNel[EE >: E, SS >: S]: ValidationNel[EE, SS]</code></pre>
           <section>
             <h3>Why</h3>
             <ul>
-              <li class="fragment">Scala's Future is not a monad</li>
-              <li class="fragment">Scalaz's Future interface is impractical</li>
+              <li class="fragment">Scala's <span class="code-like">Future</span> is not a monad</li>
+              <li class="fragment">Scalaz's <span class="code-like">Future</span> interface is impractical</li>
               <li class="fragment">useful functions for sync and async execution</li>
               <li class="fragment">trampoline let us avoid stack overflow</li>
             </ul>
@@ -350,8 +352,8 @@ def toValidationNel[EE >: E, SS >: S]: ValidationNel[EE, SS]</code></pre>
             <h4>Monad type class</h4>
             <ul>
               <li class="fragment">type constructor</li>
-              <li class="fragment"><b>unit</b> function (constructor) (<i>putting things into the box for the first time</i>)<pre><code class="hljs scala">def unit[T]: T => Monad[T]</code></pre></li>
-              <li class="fragment"><b>flatMap</b> function (<i>taking something out of the box and deciding what to do with it</i>)<pre><code class="hljs scala">trait Monad[T] {
+              <li class="fragment"><span class="code-like">unit</span> function (constructor) (<i>putting things into the box for the first time</i>)<pre><code class="hljs scala">def unit[T]: T => Monad[T]</code></pre></li>
+              <li class="fragment"><span class="code-like">flatMap</span> function (<i>taking something out of the box and deciding what to do with it</i>)<pre><code class="hljs scala">trait Monad[T] {
   def flatMap[U](func: T => Monad[U]) => Monad[U]
 }</code></pre></li>
             </ul>
@@ -391,7 +393,7 @@ def flatMap[U](func: T => MyMonad[U]): MyMonad[U]</code></pre>
             <pre class="fragment"><code class="hljs scala">sealed abstract class \/[+E, +S]
 case class -\/[+E](e: E) extends (E \/ Nothing)
 case class \/-[+S](s: S) extends (Nothing \/ S)</code></pre>
-            <p class="fragment">Like <b>Either</b> but (unlike pre-2.12) biased towards right (monad!).</p>
+            <p class="fragment">Like <span class="code-like">Either</span> but (unlike pre-2.12) biased towards right (monad!).</p>
             <pre class="fragment"><code class="hljs scala">(value: \/[Left, Right]) match {
   case -\/(left)  => // used for errors
   case \/-(right) => // used for correct values
@@ -459,23 +461,29 @@ val task3 = Task.fork(task1)(es) // forks ask1 on es service</code></pre>
           <section>
             <h3>Handling errors</h3>
             <pre><code class="hljs scala">// def handle[B>:A](f: PartialFunction[Throwable,B]): Task[B]
-val task2 = task.handle()
-val task3 = task.handleWith</code></pre>
+val task2 = task.handle {
+  case -\/(error)   => // handle error
+  case -\/(success) => // handle success
+}
+// def handleWith[B>:A]
+//     (f: PartialFunction[Throwable,Task[B]]): Task[B]
+val task3 = task.handleWith {
+  case -\/(error)   => // handle error
+  case -\/(success) => // handle success
+}</code></pre>
           </section>
           <section>
             <h3>Exercise</h3>
             <ul>
               <li class="fragment">just use few methods to fulfill tests</li>
-              <li class="fragment">you will be implementing a few simple methods in module <b>task</b> in package <small>io.scalawave.workshop.task</small></li>
+              <li class="fragment">you will be implementing a few simple methods in module <span class="code-like">task</span> in package <span class="code-like" style="font-size: 0.6em !important">io.scalawave.workshop.task</span></li>
               <li class="fragment">you can use tests <pre><code class="hljs bash">sbt task/test</code></pre></li>
               <li class="fragment">you can use cheetsheet as well as hints in the task itself</li>
             </ul>
             <aside class="notes">Show that by default task uses pool, which uses daemons and what are the consequences.</aside>
           </section>
           <section>
-            <pre style="font-size: 0.30em"><code class="hljs scala">// def apply[A](a: => A)
-//             (implicit pool: ExecutorService =
-//                  Strategy.DefaultExecutorService): Task[A]
+            <pre style="font-size: 0.30em"><code class="hljs scala">// def apply[A](a: => A)(implicit pool: ExecutorService = Strategy.DefaultExecutorService): Task[A]
 Task(operation)
 // def now[A](a: A): Task[A]
 Task.now(operation)
@@ -487,18 +495,22 @@ task.unsafePerformSyncFor(timeout)
 // def unsafePerformSyncAttemptFor(to: Long): Throwable \/ A
 // def unsafePerformSyncAttemptFor(to: Duration): Throwable \/ A
 task.unsafePerformSyncAttemptFor(timeout) // Throwable \/ Value
-// def unsafePerformAsyncInterruptibly
-//    (f: (Throwable \/ A) => Unit) : () => Unit
+// def unsafePerformAsyncInterruptibly(f: (Throwable \/ A) => Unit) : () => Unit
 task.unsafePerformAsyncInterruptibly {
   case -\/(error) => // handle left error
   case \/-(value) => // handle right value
 }
-// def unsafePerformAsyncInterruptibly
-//    (f: (Throwable \/ A) => Unit, cancel: AtomicBoolean): Unit
+// def unsafePerformAsyncInterruptibly(f: (Throwable \/ A) => Unit, cancel: AtomicBoolean): Unit
 task.unsafePerformAsyncInterruptibly(handler, atomicBoolean)
-// def fork[A](a: => Task[A])
-//            (implicit pool: ExecutorService = Strategy.DefaultExecutorService): Task[A]
-Task.fork(task)(executionService)</code></pre>
+// def fork[A](a: => Task[A])(implicit pool: ExecutorService = Strategy.DefaultExecutorService): Task[A]
+Task.fork(task)(executionService)
+// def handle[B>:A](f: PartialFunction[Throwable,B]): Task[B]
+task.handle {
+  case -\/(error) => // handle left error
+  case \/-(value) => // handle right value
+}
+// def handleWith[B>:A](f: PartialFunction[Throwable,B]): Task[B]
+task.handleWith(handler)</code></pre>
           </section>
           <section>
             <h3>Summary</h3>
@@ -548,7 +560,7 @@ val (cfg3, isViewUpdated) = setPrefsIfValid(cfg2, newPrefs)</code></pre>
           </section>
           <section>
             <h3>Why - chained?</h3>
-            <pre class="fragment"><code class="hljs scala">val (config2, value2) = doSth1(config, value)
+            <pre class="fragment"><code class="hljs scala">val (config2, value2) = doSth1(config,  value)
 val (config3, value3) = doSth2(config2, value2)
 val (config4, value4) = doSth3(config3, value3)
 val (config5, value5) = doSth4(config4, value4)
@@ -605,14 +617,14 @@ def setPrefsIfValid(newPrefs: Set[Preference]) =
             <p class="fragment">Cats:</p>
             <pre class="fragment"><code class="hljs scala">val (config2, b) = pipe.run(config).value // run once
 val (config2, b) = pipe.run(config).memoize.value // memoize</code></pre>
-            <p class="fragment">Also <b>runA</b> and <b>runS</b> for just last value or state.</p>
+            <p class="fragment">Also <span class="code-like">runA</span> and <span class="code-like">runS</span> for just last value or state.</p>
             <p class="fragment">Scalaz:</p>
             <pre class="fragment"><code class="hljs scala">val (config2, b) = pipe(config)</code></pre>
-            <p class="fragment">Also <b>eval</b> and <b>exec</b> for just last value or state.</p>
+            <p class="fragment">Also <span class="code-like">eval</span> and <span class="code-like">exec</span> for just last value or state.</p>
           </section>
           <section>
             <h3>Other useful methods</h3>
-            <table style="font-size: 0.75em">
+            <table style="font-size: 0.75em !important">
               <thead>
                 <tr>
                   <th>used for</th>
@@ -620,7 +632,7 @@ val (config2, b) = pipe.run(config).memoize.value // memoize</code></pre>
                   <th>Scalaz</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody class="code-like" >
                 <tr>
                   <td>s1 => (s2, a)</td>
                   <td>apply(s1 => (s2, a))</td>
@@ -634,7 +646,7 @@ val (config2, b) = pipe.run(config).memoize.value // memoize</code></pre>
                 <tr>
                   <td>s1 => (s2, ())</td>
                   <td>modify(s1 => s2)</td>
-                  <td>modify(s1 => s2)</td>
+                  <td>imap(s1 => s2)</td>
                 </tr>
                 <tr>
                   <td>s => (s, f(s))</td>
@@ -648,8 +660,8 @@ val (config2, b) = pipe.run(config).memoize.value // memoize</code></pre>
                 </tr>
                 <tr>
                   <td>_ => (s, ())</td>
-                  <td>put(s)</td>
-                  <td>put(s)</td>
+                  <td>set</td>
+                  <td>put</td>
                 </tr>
               </tbody>
             </table>
@@ -659,13 +671,13 @@ val (config2, b) = pipe.run(config).memoize.value // memoize</code></pre>
             <h3>Exercise</h3>
             <ul>
               <li class="fragment">we'll create a few very simple State functions</li>
-              <li class="fragment">exercises are inside module <b>state</b> in package <b>io.scalawave.workshop.state</b></li>
+              <li class="fragment">exercises are inside module <span class="code-like">state</span> in package <span class="code-like">io.scalawave.workshop.state</span></li>
               <li class="fragment">you can run tests for checking your implementation <pre><code class="hljs bash">sbt state/test</code></pre></li>
               <li class="fragment">feel free to use cheatsheets</li>
             </ul>
           </section>
           <section>
-            <table style="font-size: 0.9em">
+            <table style="font-size: 0.8em !important">
               <thead>
                 <tr>
                   <th>used for</th>
@@ -673,7 +685,7 @@ val (config2, b) = pipe.run(config).memoize.value // memoize</code></pre>
                   <th>Scalaz</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody class="code-like" >
                 <tr>
                   <td>s1 => (s2, a)</td>
                   <td>apply(s1 => (s2, a))</td>
@@ -687,7 +699,7 @@ val (config2, b) = pipe.run(config).memoize.value // memoize</code></pre>
                 <tr>
                   <td>s1 => (s2, ())</td>
                   <td>modify(s1 => s2)</td>
-                  <td>modify(s1 => s2)</td>
+                  <td>imap(s1 => s2)</td>
                 </tr>
                 <tr>
                   <td>s => (s, f(s))</td>
@@ -701,8 +713,8 @@ val (config2, b) = pipe.run(config).memoize.value // memoize</code></pre>
                 </tr>
                 <tr>
                   <td>_ => (s, ())</td>
-                  <td>set(s)</td>
-                  <td>put(s)</td>
+                  <td>set</td>
+                  <td>put</td>
                 </tr>
               </tbody>
             </table>
@@ -721,7 +733,7 @@ val (config2, b) = pipe.run(config).memoize.value // memoize</code></pre>
         <section><h2>Free</h2><section></section>
           <section>
             <h3>Why</h3>
-            <pre class="fragment"><code class="hljs scala">class User; class Preferences // some classes we defined 
+            <pre class="fragment"><code class="hljs scala">class User; class Preference // some classes we defined 
 def getUser: User
 def updateUser(user: User): User
 def getUserPreferences(user: User): Set[Preference]</code></pre>
@@ -806,7 +818,7 @@ case class GetPreferences(user: User)
   extends UserDSL[Set[Preferences]]
 
 object FutureInterpreter extends (UserDSL ~> Future) {
-  def apply[Result](command: UserDSL[Result]): Task[Result] =
+  def apply[Result](command: UserDSL[Result]): Future[Result] =
     command match {
       case GetUser => Future { /* get user */ }
       case UpdateUser(user) => Future { /* update user */ }
@@ -819,9 +831,9 @@ object FutureInterpreter extends (UserDSL ~> Future) {
             <h3>How - elements of Free</h3>
             <p class="fragment">We have 3 cases to consider</p>
             <ol>
-              <li class="fragment">storing <b>Pure</b> value (aka <b>Return</b>) - we can extract it</li>
-              <li class="fragment"><b>Suspend</b>ing calculation - this we can interpret!</li>
-              <li class="fragment">storing <b>FlatMapped</b> calculation (aka <b>Gosub</b>)</li>
+              <li class="fragment">storing <span class="code-like">Pure</span> value (aka <span class="code-like">Return</span>) - we can extract it</li>
+              <li class="fragment"><span class="code-like">Suspend</span>ing calculation - this we can interpret!</li>
+              <li class="fragment">storing <span class="code-like">FlatMapped</span> calculation (aka <span class="code-like">Gosub</span>)</li>
             </ol>
             <pre class="fragment"><code class="hljs scala">sealed abstract class Free[S[_], A]
 case class Pure[S[_], A](a: A) extends Free[S, A]
@@ -872,10 +884,10 @@ val future: Future[(User, Set[Preference])] =
             <h3>Exercise 1</h3>
             <ul>
               <li class="fragment">let us build 2 very simple DSLs and interpreters</li>
-              <li class="fragment">exercise is inside module <b>free</b> in package <small>io.scalawave.workshop.free</small></li>
+              <li class="fragment">exercise is inside module <span class="code-like">free</span> in package <span class="code-like" style="font-size: 0.6em !important">io.scalawave.workshop.free</span></li>
               <li class="fragment">you can use tests for checking if things works <pre><code class="hljs bash">sbt free/test</code></pre></li>
               <li class="fragment">your task will just concern lifting case classes and interpreting them</li>
-              <li class="fragment">look only at files: <small>CatsFree.scala, CatsIdInterpreter.scala</small> or <small>ScalazFree.scala, ScalazIdInterpreter.scala</small></li>
+              <li class="fragment">look only at files: <span class="code-like" style="font-size: 0.6em !important">CatsFree.scala, CatsIdInterpreter.scala</span> or <span class="code-like" style="font-size: 0.6em !important">ScalazFree.scala, ScalazIdInterpreter.scala</span</li>
             </ul>
           </section>
           <section>
@@ -888,7 +900,7 @@ def lifted(a: A, y: B): Free[Dsl, C] =
             <p>Interpreting</p>
             <pre><code class="hljs scala">val interpreter: (Dsl ~> Future) = new (Dsl ~> Future) {
   override def apply[Result](dsl: Dsl[Result]) = dsl match {
-    case DslElement(a, b) => // something returning C
+    case DslElement(a, b) => Future { /* something returning C */ }
   }
 }</code></pre>
           </section>
@@ -991,10 +1003,10 @@ val ops2 = new Command.Ops[Program]</code></pre>
             <h3>Exercise 2</h3>
             <ul>
               <li class="fragment">lets update our DSLs to make them "mergable"</li>
-              <li class="fragment">exercise is inside module <b>free</b> in package <b>io.scalawave.workshop.free</b></li>
+              <li class="fragment">exercise is inside module <span class="code-like">free</span> in package <span class="code-like" style="font-size: 0.6em !important">io.scalawave.workshop.free</span></li>
               <li class="fragment">you can use tests for checking if things works <pre><code class="hljs bash">sbt free/test</code></pre></li>
               <li class="fragment">you only have to change signature of Ops classes and how they are called in code</li>
-              <li class="fragment">look only at files: <small>CatsFree.scala, CatsIdInterpreter.scala</small> or <small>ScalazFree.scala, ScalazIdInterpreter.scala</small></li>
+              <li class="fragment">look only at files: <span class="code-like" style="font-size: 0.6em !important">CatsFree.scala, CatsIdInterpreter.scala</span> or <span class="code-like" style="font-size: 0.6em !important">ScalazFree.scala, ScalazIdInterpreter.scala</span></li>
             </ul>
           </section>
           <section>
@@ -1073,7 +1085,7 @@ final class CommandIdInterpreter(...)
         <section><h2>Workshops summary</h2><section></section>
           <section>
             <ul>
-              <li class="fragment">validation</li>
+              <li class="fragment">Validation</li>
               <li class="fragment">Task</li>
               <li class="fragment">State</li>
               <li class="fragment">Free</li>
