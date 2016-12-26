@@ -146,7 +146,7 @@ object Validated {
   case class Invalid[+E](e: E) extends Validated[E, Nothing]
 
   def invalid[E, S](e: E): Validated[E, S] = Invalid(e)
-  def valid[E, S](s: B): Validated[E, S] = Valid(s)
+  def valid[E, S](s: S): Validated[E, S] = Valid(s)
 }</code></pre>
             <pre class="fragment"><code class="hljs scala">val s: Validated[String, Int] = Validated.valid(12)
 val f: Validated[String, Int] = Validated.invalid("failed")</code></pre>
@@ -216,7 +216,7 @@ object Validated {
 }</code></pre>
           </section>
           <section>
-            <h3>NEL in Validated</h3>
+            <h3>NEL in Validation</h3>
             <pre class="fragment"><code class="hljs scala">type ValidationNel[E, +S] = Validation[NonEmptyList[E], S]
 
 sealed abstract class Validation[+E, +S] {
