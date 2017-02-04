@@ -27,7 +27,7 @@
         <section>
           <h1>Nice <b>Scalaz</b> (and <b>Cats</b>) monads you want to use: <b>State</b>, <b>Free</b>, <b>Task</b>, as well as <b>Validation</b></h1>
           <br />
-          <p><a href="http://kubuszok.pl">Mateusz Kubuszok</a> <b>&gt;</b> <a href="http://scalawave.io">ScalaWave 2016</a></p>
+          <p><a href="http://kubuszok.pl">Mateusz Kubuszok</a></p>
         </section>
         <section><h1>Workshop</h1></section>
         <section><h2>Workshop</h2><section></section>
@@ -900,7 +900,7 @@ def lifted(a: A, y: B): Free[Dsl, C] =
             <p>Interpreting</p>
             <pre><code class="hljs scala">val interpreter: (Dsl ~> Future) = new (Dsl ~> Future) {
   override def apply[Result](dsl: Dsl[Result]) = dsl match {
-    case DslElement(a, b) => Future { /* something returning C */ }
+    case DslElement(a, b) => Future { /* sth returning C */ }
   }
 }</code></pre>
           </section>
@@ -1076,7 +1076,7 @@ final class CommandIdInterpreter(...)
             <p>Possible problem: monads don't compose well</p>
             <ul>
               <li class="fragment">monad transformers</li>
-              <li class="fragment">Eff monade</li>
+              <li class="fragment">Eff monad</li>
               <li class="fragment">not doing it</li>
             </ul>
           </section>
