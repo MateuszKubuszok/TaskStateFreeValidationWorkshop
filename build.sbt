@@ -4,7 +4,7 @@ import Settings._
 scalaVersion in ThisBuild := scalaVersionUsed
 
 lazy val root = project.root
-  .setName("Workshop excercises")
+  .setName("Workshop exercises")
   .setDescription("Task, State, Free, Validation workshop")
   .setInitialCommand("_")
   .configureRoot
@@ -21,7 +21,7 @@ lazy val validation = project.from("validation")
   .setInitialCommand("validation._")
   .configureModule
   .dependsOn(common)
-  .settings(mainClass in (Compile, run) := Some("io.scalawave.workshop.validation.Main"))
+  .settings(mainClass in (Compile, run) := Some("workshop.validation.Main"))
 
 lazy val state = project.from("state")
   .setName("workshop-state")
@@ -29,7 +29,7 @@ lazy val state = project.from("state")
   .setInitialCommand("state._")
   .configureModule
   .dependsOn(common)
-  .settings(mainClass in (Compile, run) := Some("io.scalawave.workshop.state.Main"))
+  .settings(mainClass in (Compile, run) := Some("workshop.state.Main"))
 
 lazy val free = project.from("free")
   .setName("workshop-free")
@@ -37,7 +37,7 @@ lazy val free = project.from("free")
   .setInitialCommand("free._")
   .configureModule
   .dependsOn(common)
-  .settings(mainClass in (Compile, run) := Some("io.scalawave.workshop.free.Main"))
+  .settings(mainClass in (Compile, run) := Some("workshop.free.Main"))
 
 lazy val task = project.from("task")
   .setName("workshop-task")
@@ -45,7 +45,7 @@ lazy val task = project.from("task")
   .setInitialCommand("task._")
   .configureModule
   .dependsOn(common)
-  .settings(mainClass in (Compile, run) := Some("io.scalawave.workshop.task.Main"))
+  .settings(mainClass in (Compile, run) := Some("workshop.task.Main"))
 
 lazy val `summary-cats` = project.from("summary-cats")
   .setName("workshop-summary-cats")
@@ -53,7 +53,7 @@ lazy val `summary-cats` = project.from("summary-cats")
   .setInitialCommand("summary._")
   .configureModule
   .dependsOn(common, validation, state, free, task)
-  .settings(mainClass in (Compile, run) := Some("io.scalawave.workshop.summary.CatsMain"))
+  .settings(mainClass in (Compile, run) := Some("workshop.summary.CatsMain"))
 
 lazy val `summary-scalaz` = project.from("summary-scalaz")
   .setName("workshop-summary-scalaz")
@@ -61,4 +61,4 @@ lazy val `summary-scalaz` = project.from("summary-scalaz")
   .setInitialCommand("summary._")
   .configureModule
   .dependsOn(common, validation, state, free, task)
-  .settings(mainClass in (Compile, run) := Some("io.scalawave.workshop.summary.ScalazMain"))
+  .settings(mainClass in (Compile, run) := Some("workshop.summary.ScalazMain"))

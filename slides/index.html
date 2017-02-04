@@ -292,7 +292,7 @@ def fromTryCatchNonFatal[A](f: => A): Validation[Throwable, A]
             <h3>Exercise</h3>
             <ul>
               <li class="fragment">we'll try to implement a few simple validations -choose either Cats or Scalaz version</li>
-              <li class="fragment">functions we will implement are placed in module <span class="code-like">validation</span>, in package <span class="code-like" style="font-size: 0.6em !important">io.scalawave.workshop.validation</span></li>
+              <li class="fragment">functions we will implement are placed in module <span class="code-like">validation</span>, in package <span class="code-like" style="font-size: 0.6em !important">workshop.validation</span></li>
               <li class="fragment">you can use test to guide you during implementation - run them with<pre><code class="hljs bash">sbt validation/test</code></pre></li>
               <li class="fragment">use cheatsheet as well as hints inside the exercise</li>
             </ul>
@@ -476,7 +476,7 @@ val task3 = task.handleWith {
             <h3>Exercise</h3>
             <ul>
               <li class="fragment">just use few methods to fulfill tests</li>
-              <li class="fragment">you will be implementing a few simple methods in module <span class="code-like">task</span> in package <span class="code-like" style="font-size: 0.6em !important">io.scalawave.workshop.task</span></li>
+              <li class="fragment">you will be implementing a few simple methods in module <span class="code-like">task</span> in package <span class="code-like" style="font-size: 0.6em !important">workshop.task</span></li>
               <li class="fragment">you can use tests <pre><code class="hljs bash">sbt task/test</code></pre></li>
               <li class="fragment">you can use cheetsheet as well as hints in the task itself</li>
             </ul>
@@ -671,7 +671,7 @@ val (config2, b) = pipe.run(config).memoize.value // memoize</code></pre>
             <h3>Exercise</h3>
             <ul>
               <li class="fragment">we'll create a few very simple State functions</li>
-              <li class="fragment">exercises are inside module <span class="code-like">state</span> in package <span class="code-like">io.scalawave.workshop.state</span></li>
+              <li class="fragment">exercises are inside module <span class="code-like">state</span> in package <span class="code-like">workshop.state</span></li>
               <li class="fragment">you can run tests for checking your implementation <pre><code class="hljs bash">sbt state/test</code></pre></li>
               <li class="fragment">feel free to use cheatsheets</li>
             </ul>
@@ -884,7 +884,7 @@ val future: Future[(User, Set[Preference])] =
             <h3>Exercise 1</h3>
             <ul>
               <li class="fragment">let us build 2 very simple DSLs and interpreters</li>
-              <li class="fragment">exercise is inside module <span class="code-like">free</span> in package <span class="code-like" style="font-size: 0.6em !important">io.scalawave.workshop.free</span></li>
+              <li class="fragment">exercise is inside module <span class="code-like">free</span> in package <span class="code-like" style="font-size: 0.6em !important">workshop.free</span></li>
               <li class="fragment">you can use tests for checking if things works <pre><code class="hljs bash">sbt free/test</code></pre></li>
               <li class="fragment">your task will just concern lifting case classes and interpreting them</li>
               <li class="fragment">look only at files: <span class="code-like" style="font-size: 0.6em !important">CatsFree.scala, CatsIdInterpreter.scala</span> or <span class="code-like" style="font-size: 0.6em !important">ScalazFree.scala, ScalazIdInterpreter.scala</span</li>
@@ -1003,7 +1003,7 @@ val ops2 = new Command.Ops[Program]</code></pre>
             <h3>Exercise 2</h3>
             <ul>
               <li class="fragment">lets update our DSLs to make them "mergable"</li>
-              <li class="fragment">exercise is inside module <span class="code-like">free</span> in package <span class="code-like" style="font-size: 0.6em !important">io.scalawave.workshop.free</span></li>
+              <li class="fragment">exercise is inside module <span class="code-like">free</span> in package <span class="code-like" style="font-size: 0.6em !important">workshop.free</span></li>
               <li class="fragment">you can use tests for checking if things works <pre><code class="hljs bash">sbt free/test</code></pre></li>
               <li class="fragment">you only have to change signature of Ops classes and how they are called in code</li>
               <li class="fragment">look only at files: <span class="code-like" style="font-size: 0.6em !important">CatsFree.scala, CatsIdInterpreter.scala</span> or <span class="code-like" style="font-size: 0.6em !important">ScalazFree.scala, ScalazIdInterpreter.scala</span></li>

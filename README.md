@@ -10,7 +10,7 @@ are placed under `slides/index.html`. I encourage you to open them and follow th
 
 ### Validation exercise
 
-Files are in `validation` module inside `io.scalawave.workshop.validation` package.
+Files are in `validation` module inside `workshop.validation` package.
 
 You can validate your solutions by running:
 
@@ -28,7 +28,7 @@ If you had problem with the exercise you can preview solutions by merging soluti
 
 ### Task exercise
 
-Files are in `task` module inside `io.scalawave.workshop.task` package.
+Files are in `task` module inside `workshop.task` package.
 
 You can validate your solutions by running:
 
@@ -46,7 +46,7 @@ If you had problem with the exercise you can preview solutions by merging soluti
 
 ### State exercise
 
-Files are in `state` module inside `io.scalawave.workshop.state` package.
+Files are in `state` module inside `workshop.state` package.
 
 You can validate your solutions by running:
 
@@ -64,7 +64,7 @@ If you had problem with the exercise you can preview solutions by merging soluti
 
 ### Free exercises
 
-Files are in `free` module inside `io.scalawave.workshop.free` package.
+Files are in `free` module inside `workshop.free` package.
 
 You can validate your solutions by running:
 

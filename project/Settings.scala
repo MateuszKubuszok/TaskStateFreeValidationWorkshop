@@ -7,8 +7,8 @@ import sbt.Keys._
 object Settings extends Dependencies {
 
   private val commonSettings = Seq(
-    organization := "io.scalawave",
-    version := "0.1.0-SNAPSHOT",
+    organization := "pl.combosolutions",
+    version := "0.2.0-SNAPSHOT",
 
     scalaVersion := scalaVersionUsed
   )
@@ -60,7 +60,7 @@ object Settings extends Dependencies {
     def setDescription(newDescription: String): Project = project.settings(description := newDescription)
 
     def setInitialCommand(newInitialCommand: String): Project =
-      project.settings(initialCommands := s"io.scalawave.workshop.$newInitialCommand")
+      project.settings(initialCommands := s"workshop.$newInitialCommand")
   }
 
   implicit class RootConfigurator(project: Project) {
