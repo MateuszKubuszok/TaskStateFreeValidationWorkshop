@@ -37,7 +37,7 @@ object CatsState {
   /**
    * Updates state with new USD exchange rate and returns old rate.
    *
-   * Hint: we want to both update state and retrive some value - there are several good ways to do it ;)
+   * Hint: we want to both update state and retrieve some value - there are several good ways to do it ;)
    *
    * @param to conversion to
    * @param rate exchange rate

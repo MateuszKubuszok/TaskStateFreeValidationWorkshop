@@ -31,7 +31,7 @@ object CurrencyOnlineServiceHandler extends (Currency => Double) {
   /** Fetches data and waits for the result.
    *
    * While we can call [[wrapperForDefaultValue]] it doesn't solve our problem as it sometimes throws, and we would like
-   * to retry utill it succeeds.
+   * to retry util it succeeds.
    *
    * Hint: we want to wait synchronously perform
    *

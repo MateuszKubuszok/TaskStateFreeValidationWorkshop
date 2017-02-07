@@ -87,7 +87,7 @@ object CatsValidation {
    * Hint: we could reuse here [[parseNatural]] and [[parseDataSource]] - if only we had something like cartesian
    * builder which would combine them and apply as arguments to the constructor...
    *
-   * @param accuracy String parsed into display accuracy (natual number)
+   * @param accuracy String parsed into display accuracy (natural number)
    * @param dataSource String parsed into DataSource
    * @return
    */

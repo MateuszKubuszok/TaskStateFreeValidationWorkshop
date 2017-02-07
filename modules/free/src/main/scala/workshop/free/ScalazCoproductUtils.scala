@@ -1,4 +1,4 @@
-package workshop.free;
+package workshop.free
 
 import scalaz._
 

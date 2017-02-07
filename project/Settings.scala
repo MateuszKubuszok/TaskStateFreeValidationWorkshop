@@ -29,7 +29,7 @@ object Settings extends Dependencies {
       "-Yno-adapted-args",
       "-Ywarn-dead-code",
       "-Ywarn-infer-any",
-      "-Ywarn-unused-import",
+      // "-Ywarn-unused-import",
       "-Xlint"
     ),
 

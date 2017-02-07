@@ -97,10 +97,11 @@ val box2: Seq[String] = box.map(func) // Seq("1", "2", "3")</code></pre>
               <li class="fragment"><b>identity</b> should leave a functor (type) intact: <pre><code class="hljs scala">def identity[T](value: T): T = value
 val box3: Box[Int] = box.map(identity) // box3 == box</code></pre></li>
               <li class="fragment">applying functions one by one, or composing them and then applying should not change the result<pre><code style="max-width: inherit;" class="hljs scala">val box = Seq(1, 2, 3)
-val f1: Int => Int = _ * 2
-val f2: Int => Double: _.toDouble
-box.map(f1).map(f2) == box.map(a.andThen(b))
-// both should give Seq(2.0, 4.0, 6.0)</code></pre></li>
+val f1: Int => Double = _.toDouble
+val f2: Double => String = _.toString
+val f3: Int => String = f1.andThen(f2)
+box.map(f1).map(f2) == box.map(f3)
+// both should give Seq("1.0", "2.0", "3.0")</code></pre></li>
             </ul>
           </section>
           <section>
@@ -264,7 +265,7 @@ val result: Validation[Exception, Test] =
           </section>
           <section>
             <h3>Parallel validation</h3>
-            <p class="fragment">Use cartsian/applicative builders or:</p>
+            <p class="fragment">Use cartesian/applicative builders or:</p>
             <p class="fragment">Cats</p>
             <pre class="fragment"><code class="hljs scala">v1 combine v2</code></pre>
             <p class="fragment">Scalaz</p>
@@ -363,7 +364,7 @@ def toValidationNel[EE >: E, SS >: S]: ValidationNel[EE, SS]</code></pre>
             <h4>Monadic laws</h4>
             <ul>
               <li class="fragment"><b>left identity</b> - aka left unit law<pre><code class="hljs scala">unit(value).flatMap(func) == func(value)</code></pre></li>
-              <li class="fragment"><b>right identity</b> - aka left unit law<pre><code class="hljs scala">mValue.flatMap(unit) == mValue</code></pre></li>
+              <li class="fragment"><b>right identity</b> - aka right unit law<pre><code class="hljs scala">mValue.flatMap(unit) == mValue</code></pre></li>
               <li class="fragment"><b>associativity</b> - how we put "parenthesis" does not matter<pre><code class="hljs scala">m.flatMap(f1).flatMap(f2) == m.flatMap(v=> f1(v).flatMap(f2))</code></pre></li>
             </ul>
             <aside class="notes">Explain that Future (and Try) fails to fulfill left identity law, so it is not a monad, though it is enough to make for comprehension work.</aside>
@@ -462,14 +463,12 @@ val task3 = Task.fork(task1)(es) // forks ask1 on es service</code></pre>
             <h3>Handling errors</h3>
             <pre><code class="hljs scala">// def handle[B>:A](f: PartialFunction[Throwable,B]): Task[B]
 val task2 = task.handle {
-  case -\/(error)   => // handle error
-  case -\/(success) => // handle success
+  case -\/(error) => valueB // handle error
 }
 // def handleWith[B>:A]
 //     (f: PartialFunction[Throwable,Task[B]]): Task[B]
 val task3 = task.handleWith {
-  case -\/(error)   => // handle error
-  case -\/(success) => // handle success
+  case -\/(error) => Task.now(valueB) // handle error
 }</code></pre>
           </section>
           <section>
@@ -660,8 +659,8 @@ val (config2, b) = pipe.run(config).memoize.value // memoize</code></pre>
                 </tr>
                 <tr>
                   <td>_ => (s, ())</td>
-                  <td>set</td>
-                  <td>put</td>
+                  <td>set(s)</td>
+                  <td>put(s)</td>
                 </tr>
               </tbody>
             </table>
@@ -713,8 +712,8 @@ val (config2, b) = pipe.run(config).memoize.value // memoize</code></pre>
                 </tr>
                 <tr>
                   <td>_ => (s, ())</td>
-                  <td>set</td>
-                  <td>put</td>
+                  <td>set(s)</td>
+                  <td>put(s)</td>
                 </tr>
               </tbody>
             </table>
