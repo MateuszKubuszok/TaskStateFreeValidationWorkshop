@@ -32,13 +32,28 @@
         <section><h1>Workshop</h1></section>
         <section><h2>Workshop</h2><section></section>
           <section>
+            <h3>The dream project</h3>
+            <ul>
+              <li class="fragment">comprehensible</li>
+              <li class="fragment">easy to test</li>
+              <li class="fragment">easy to maintain</li>
+              <li class="fragment">as little moving parts as possible</li>
+              <li class="fragment">check in compile time what possible</li>
+              <aside class="notes">Mention Quasar as an example of code build from the beginning with the functional approach in mind</aside>
+            </ul>
+          </section>
+          <section>
+            <h3>Our small example project</h3>
+            <!-- add image here with the idea -->
+          </section>
+          <section>
             <h3>The plan</h3>
             <ul>
               <li class="fragment">Validation</li>
               <li class="fragment">Task</li>
               <li class="fragment">State</li>
               <li class="fragment">Free</li>
-              <li class="fragment">example application build with implemented components</li>
+              <li class="fragment">example application</li>
               <aside class="notes">Explain how application will look like to get feeling what will be needed. Let them run SBT in order to fetch all dependencies ahead.</aside>
             </ul>
           </section>
@@ -55,6 +70,56 @@
               <li class="fragment">exclusive or: <span class="code-like">Xor</span>, disjunction <span class="code-like">\/</span></li>
             </ul>
             <aside class="notes">Mention that from Scala 2.12 Xor is a type alias for Either - before it was a separate implementation because Either was not biased.</aside>
+          </section>
+          <section>
+            <h3>Why</h3>
+            <pre class="fragment"><code class="hljs scala">def processInput(input: InputStream, result: ResultObj): Boolean
+val mutableResultObj = new ResultObj()
+processInput(fileStream, result) // false!
+result.useResult() // invalid state!</code></pre>
+          </section>
+          <section>
+            <h3>Why</h3>
+            <pre class="fragment"><code class="hljs java">Result processInput(InputStream input)
+    throws ProcessingException</code></pre>
+            <pre class="fragment"><code class="hljs scala">// throws Exception
+def processInput(input: InputStream): Result</code></pre>
+            <aside class="notes">Mention that checked exceptions pollutes interfaces and so people ended up unchecking them.</aside>
+          </section>
+          <section>
+            <h3>Why</h3>
+            <pre class="fragment"><code class="hljs scala">def processInput(input: InputStream): Either[ErrorMsg, Result]
+processInput(input) match {
+  case Left(failure)  => // handle failure
+  case Right(success) => // handle success
+}</code></pre>
+            <pre class="fragment"><code class="hljs scala">// why not?
+def processInput(input: InputStream): Either[Result, ErrorMsg]
+processInput(input) match {
+  case Left(success)  => // handle success
+  case Right(failure) => // handle failure
+}</code></pre>
+            <pre class="fragment"><code class="hljs scala">// how to combine
+processInput(input1); processInput(input2)</code></pre>
+            <aside class="notes">Mention that Left/Right meaning is by convention only and that there is not out-the-box way of aggregating them.</aside>
+          </section>
+          <section>
+            <h3>Why</h3>
+            <pre class="fragment"><code class="hljs scala">def processInput(input: InputStream): Xor[ErrorMsg, Result]
+processInput(input) match {
+  case Xor.Left(failure)  => // handle failure
+  case Xor.Right(success) => // handle success
+}</code></pre>
+            <pre class="fragment"><code class="hljs scala">// why not?
+def processInput(input: InputStream): ErrorMsg \/ Result
+processInput(input) match {
+  case -\/(failure) => // handle failure
+  case \/-(success) => // handle success
+}</code></pre>
+          </section>
+          <section>
+            <h4>Validation</h4>
+            <aside class="notes">Tell that we need to take a detour.</aside>
           </section>
           <section>
             <h4>3 flavors of polymorphism</h4>
@@ -77,6 +142,7 @@
             <ul>
               <li class="fragment">having boxes of some sort</li>
               <li class="fragment">doing something with things in boxes, one thing at a time</li>
+              <!-- insert image here -->
             </ul>
           </section>
           <section>
@@ -94,9 +160,9 @@ val box2: Seq[String] = box.map(func) // Seq("1", "2", "3")</code></pre>
           <section>
             <h3>Functor laws</h3>
             <ul>
-              <li class="fragment"><b>identity</b> should leave a functor (type) intact: <pre><code class="hljs scala">def identity[T](value: T): T = value
+              <li class="fragment">mapping <b>identity</b> should have no effect: <pre><code class="hljs scala">def identity[T](value: T): T = value
 val box3: Box[Int] = box.map(identity) // box3 == box</code></pre></li>
-              <li class="fragment">applying functions one by one, or composing them and then applying should not change the result<pre><code style="max-width: inherit;" class="hljs scala">val box = Seq(1, 2, 3)
+              <li class="fragment">chained maps work like a map of chained functions<pre><code style="max-width: inherit;" class="hljs scala">val box = Seq(1, 2, 3)
 val f1: Int => Double = _.toDouble
 val f2: Double => String = _.toString
 val f3: Int => String = f1.andThen(f2)
@@ -107,29 +173,27 @@ box.map(f1).map(f2) == box.map(f3)
           <section>
             <h3>Applicative functors</h3>
             <ul>
-              <li class="fragment">another type class</li>
-              <li class="fragment">defines pure function for wrapping values</li>
-              <li class="fragment">extends functor by handling functions stored within as a value</li>
+              <li class="fragment">extends functor</li>
+              <li class="fragment">can store functions and apply them</li>
             </ul>
             <pre class="fragment"><code class="hljs scala">trait MyApplicative[T] extends MyFunctor[T] {
   def ap[U](other: MyApplicative[T => U]): MyApplicative[U]
 }</code></pre>
-            <pre class="fragment"><code class="hljs scala">val apv: MyApplicative[Int] = MyApplicative(1)
-val apf: MyApplicative[String => Int] =
-  MyApplicative((s: String) => s.toInt)
-val apr: MyApplicative[Int] = apv.ap(apf)</code></pre>
+            <pre class="fragment"><code class="hljs scala">val apVal: MyApplicative[String]        = MyApplicative("1")
+val apFun: MyApplicative[String => Int] = MyApplicative(_.toInt)
+val result: MyApplicative[Int]          = apVal.ap(apFunc)</code></pre>
            <aside class="notes">Mention that constructor should be names pure or point.</aside>
           </section>
           <section>
             <h3>Applicative laws</h3>
-            <ul>
-              <li class="fragment">identity<pre><code class="hljs scala">applicative.ap(MyApplicative(identity))</code></pre></li>
-              <li class="fragment">homomorphism<pre><code class="hljs scala">MyApplicative(value).ap(MyApplicative(func))
-  == MyApplicative(func(value))</code></pre></li>
-              <li class="fragment">interchange<pre><code class="hljs scala">MyApplicative(value).ap(func)
-  == MyApplicative(f => f(value)).ap(func)</code></pre></li>
-              <li class="fragment"><span class="code-like">ap</span> is associative - composing like plain functions</li>
+            <ul style="font-size: 80%;width:100%">
+              <li class="fragment">identity<pre><code class="hljs scala">applicative.ap(MyApplicative(identity)) == applicative</code></pre></li>
+              <li class="fragment">homomorphism<pre><code class="hljs scala">MyApplicative(value).ap(MyApplicative(func)) == MyApplicative(func(value))</code></pre></li>
+              <li class="fragment">interchange<pre><code class="hljs scala">apFunc.ap(MyApplicative(value)) == MyApplicative(f => f(value)).ap(apFunc)</code></pre></li>
+              <li class="fragment">composition<pre><code class="hljs scala">MyApplicative(bc => ab => ab.andThen(bc)).ap(apBC).ap(apAB).ap(apA)
+  == apBC.ap(apAB.ap(apA))</code></pre></li>
             </ul>
+            <aside class="notes">interchange - instead of value, we can use function that applies that value to the function.</aside>
           </section>
           <section>
             <h3>Comparison</h3>
@@ -138,6 +202,19 @@ def map[U](func: T => U): MyFunctor[U]
 
 // MyApplicative[T]
 def ap[U](other: MyApplicative[T => U]): MyApplicative[U]</code></pre>
+          </section>
+          <section>
+            <h3>Finally - validation!</h3>
+          </section>
+          <section>
+            <h3>Validation!</h3>
+            <pre class="fragment"><code class="hljs scala">val result: Validated[String, Integer] =
+    if (string.matches("[0-9]+")) valid(string.toInt)
+    else invalid("Not a positive number")</code></pre>
+            <pre class="fragment"><code class="hljs scala">result match {
+  case Valid(natural) => // handle success
+  case Invalid(error) => // handle failure
+}</code></pre>
           </section>
           <section>
             <h3>Wrapping values - cats</h3>
@@ -164,18 +241,6 @@ implicit class ValidationOps[V](val self: V) {
 }</code></pre>
             <pre class="fragment"><code class="hljs scala">val s: Validation[String, Int] = 12.success[String]
 val f: Validation[String, Int] = "failed".failure[Int]</code></pre>
-          </section>
-          <section>
-            <h3>Applicative syntax</h3>
-            <p class="fragment">Cats</p>
-            <pre class="fragment"><code class="hljs scala">def arg: Validated[String, Double]
-def func: Validated[String, Double => Int]
-def result: Validated[String, Int] = arg.ap(func)</code></pre>
-            <p class="fragment">Scalaz</p>
-            <pre class="fragment"><code class="hljs scala">def arg: Validation[String, Double]
-def func: Validation[String, Double => Int]
-def result: Validation[String, Int] = arg.ap(func)</code></pre>
-            <aside class="notes">Mention difference in signature: flipped arguments.</aside>
           </section>
           <section>
             <h3>Problem</h3>
@@ -249,17 +314,45 @@ for {        // just a syntax! it doesn't make it a monad
             <aside class="notes">Explain that it will stop validation on first error.</aside>
           </section>
           <section>
+            <h3>Applicative syntax</h3>
+            <p class="fragment">Cats</p>
+            <pre class="fragment"><code class="hljs scala">def arg: Validated[String, Double]
+def func: Validated[String, Double => Int]
+def result: Validated[String, Int] = arg.ap(func)</code></pre>
+            <p class="fragment">Scalaz</p>
+            <pre class="fragment"><code class="hljs scala">def arg: Validation[String, Double]
+def func: Validation[String, Double => Int]
+def result: Validation[String, Int] = arg.ap(func)</code></pre>
+            <aside class="notes">Mention difference in signature: flipped arguments.</aside>
+          </section>
+          <section>
+            <h3>Cartesian builder</h3>
+            <pre class="fragment"><code class="hljs scala">implicit class CartesianOps[F[_], A](fa: F[A]) {
+  def |@|[B](fb: F[B]) = new CartesianBuilder2[F, A, B](fa, fb)
+}</code></pre>
+            <pre class="fragment"><code class="hljs scala">class CartesianBuilder2[F[_], A, B](fa: F[A], fb: F[B]) {
+  
+  def map[C](func: (A, B) => C): F[C] =
+      fb.ap(fa.map(func.curried))
+
+  def |@|[C](fc: F[C]) = new CartesianBuilder3(fa, fb, fc)
+}</code></pre>
+            <pre class="fragment"><code class="hljs scala">class CartesianBuilder3[F[_], A, B, C](
+    fa: F[A], fb: F[B], fc: F[C]) { ... }</code></pre>
+            <aside class="notes">Aka applicative builder. |@| - read like scream, "Admiral Ackbar" or "Macaulay Culkin".</aside>
+          </section>
+          <section>
             <h3>Cartesian builder</h3>
             <pre class="fragment"><code class="hljs scala">case class Test(i: Int, d: Double)</code></pre>
             <p class="fragment">Cats</p>
-            <pre class="fragment"><code class="hljs scala">val parseInt: String => Validated[Exception, Int]
-val parseDouble: String => Validated[Exception, Double]
-val result: Validated[Exception, Test] =
+            <pre class="fragment"><code class="hljs scala">val parseInt: String => ValidatedNel[String, Int]
+val parseDouble: String => ValidatedNel[String, Double]
+val result: ValidatedNel[String, Test] =
   (parseInt(x) |@| parseDouble(y)) map { Test }</code></pre>
             <p class="fragment">Scalaz</p>
-            <pre class="fragment"><code class="hljs scala">val parseInt: String => Validation[Exception, Int]
-val parseDouble: String => Validation[Exception, Double]
-val result: Validation[Exception, Test] =
+            <pre class="fragment"><code class="hljs scala">val parseInt: String => ValidationNel[String, Int]
+val parseDouble: String => ValidationNel[String, Double]
+val result: ValidationNel[String, Test] =
   (parseInt(x) |@| parseDouble(y))(Test)</code></pre>
             <aside class="notes">Aka applicative builder. |@| - read like scream, "Admiral Ackbar" or "Macaulay Culkin".</aside>
           </section>
@@ -382,11 +475,22 @@ def flatMap[U](func: T => MyMonad[U]): MyMonad[U]</code></pre>
           </section>
           <section>
             <h3>For-comprehension</h3>
-            <pre class="fragment"><code class="hljs scala">for {
+            <table>
+              <tr>
+                <td><pre class="fragment" style="width:100%"><code class="hljs scala">for {
   value  <- valueTask
   (a, b) <- pairTask(value)
   c      <- otherTask
-} yield (a, b, c)</code></pre>
+} yield (a, b, c)</code></pre></td>
+                <td><pre class="fragment" style="width:100%"><code class="hljs scala">valueTask.flatMap { value =>
+  pairTask(value).flatMap { (a, b) =>
+    otherTask.map { c =>
+      (a, b, c)
+    }
+  }
+}</code></pre></td>
+              </tr>
+            </table>
             <aside class="notes">Mention that trampoline allows us to avoid stack overflow when we use flatMaps.</aside>
           </section>
           <section>
@@ -394,7 +498,6 @@ def flatMap[U](func: T => MyMonad[U]): MyMonad[U]</code></pre>
             <pre class="fragment"><code class="hljs scala">sealed abstract class \/[+E, +S]
 case class -\/[+E](e: E) extends (E \/ Nothing)
 case class \/-[+S](s: S) extends (Nothing \/ S)</code></pre>
-            <p class="fragment">Like <span class="code-like">Either</span> but (unlike pre-2.12) biased towards right (monad!).</p>
             <pre class="fragment"><code class="hljs scala">(value: \/[Left, Right]) match {
   case -\/(left)  => // used for errors
   case \/-(right) => // used for correct values
