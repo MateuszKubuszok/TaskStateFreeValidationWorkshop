@@ -108,7 +108,7 @@ class CatsCalculationIdInterpreterSpec extends Specification with CatsInterprete
   }
 
   trait Fixture extends Scope {
-    val ops = new Ops
+    val ops = new Ops[CatsCalculation]
     val input = mutable.Queue[String]()
     val output = mutable.MutableList[String]()
     val configStore = ConfigStore(Config(2, DataSource.DataBase))
