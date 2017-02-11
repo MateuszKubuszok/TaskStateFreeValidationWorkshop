@@ -36,7 +36,10 @@ object CatsValidation {
    * @param double value to parse
    * @return error messages or value
    */
-  def parseDouble(double: String): ValidatedNel[ParsingError, Double] = ???
+  def parseDouble(double: String): ValidatedNel[ParsingError, Double] =
+    Validated.catchNonFatal { double.trim.toDouble }
+      .leftMap { _ => NotANumber(double) }
+      .toValidatedNel
 
   /**
    * Parses passed String into natural number (non-negative Int) or returns error message(s).
@@ -47,7 +50,11 @@ object CatsValidation {
    * @param natural value to parse
    * @return error messages or value
    */
-  def parseNatural(natural: String): ValidatedNel[ParsingError, Int] = ???
+  def parseNatural(natural: String): ValidatedNel[ParsingError, Int] =
+    Validated.catchNonFatal { natural.trim.toInt }
+      .leftMap { _ => NotANumber(natural) }
+      .ensure(NotNatural(natural)) { _ >= 0 }
+      .toValidatedNel
 
   /**
    * Parses passed String into ActionType or returns error message(s).
@@ -59,7 +66,10 @@ object CatsValidation {
    * @param actionType value to parse
    * @return error messages or value
    */
-  def parseActionType(actionType: String): ValidatedNel[ParsingError, ActionType] = ???
+  def parseActionType(actionType: String): ValidatedNel[ParsingError, ActionType] =
+    Validated.catchNonFatal { ActionType.withName(actionType.trim.toLowerCase) }
+      .leftMap { _ => InvalidActionType(actionType) }
+      .toValidatedNel
 
   /**
    * Parses passed String into Currency or returns error message(s).
@@ -69,7 +79,10 @@ object CatsValidation {
    * @param currency value to parse
    * @return error messages or value
    */
-  def parseCurrency(currency: String): ValidatedNel[ParsingError, Currency] = ???
+  def parseCurrency(currency: String): ValidatedNel[ParsingError, Currency] =
+    Validated.catchNonFatal { Currency.withName(currency.trim.toLowerCase) }
+      .leftMap { _ => InvalidCurrency(currency) }
+      .toValidatedNel
 
   /**
    * Parses passed String into DataSource or returns error message(s).
@@ -79,7 +92,10 @@ object CatsValidation {
    * @param dataSource value to parse
    * @return error messages or value
    */
-  def parseDataSource(dataSource: String): ValidatedNel[ParsingError, DataSource] = ???
+  def parseDataSource(dataSource: String): ValidatedNel[ParsingError, DataSource] =
+    Validated.catchNonFatal { DataSource.withName(dataSource.trim.toLowerCase) }
+      .leftMap { _ => InvalidDataSource(dataSource) }
+      .toValidatedNel
 
   /**
    * Parses passed Strings into Config or returns error message(s).
@@ -91,5 +107,6 @@ object CatsValidation {
    * @param dataSource String parsed into DataSource
    * @return
    */
-  def parseConfig(accuracy: String, dataSource: String): ValidatedNel[ParsingError, Config] = ???
+  def parseConfig(accuracy: String, dataSource: String): ValidatedNel[ParsingError, Config] =
+    (parseNatural(accuracy) |@| parseDataSource(dataSource)) map { Config }
 }
