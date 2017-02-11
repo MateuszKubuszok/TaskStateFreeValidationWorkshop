@@ -31,9 +31,9 @@ object ScalazCommand {
 
   class Ops {
 
-    def getNextAction(question: String): Free[ScalazCommand, ActionType] = ???
-    def configure(question: String): Free[ScalazCommand, Unit] = ???
-    def quit: Free[ScalazCommand, Unit] = ???
+    def getNextAction(question: String): Free[ScalazCommand, ActionType] = Free.liftF(GetNextAction(question))
+    def configure(question: String): Free[ScalazCommand, Unit] = Free.liftF(Configure(question))
+    def quit: Free[ScalazCommand, Unit] = Free.liftF(Quit)
   }
 }
 
@@ -48,10 +48,10 @@ object ScalazCalculation {
 
   class Ops {
 
-    def getCurrency(question: String): Free[ScalazCalculation, Currency] = ???
-    def getAmount(question: String): Free[ScalazCalculation, Double] = ???
+    def getCurrency(question: String): Free[ScalazCalculation, Currency] = Free.liftF(GetCurrency(question))
+    def getAmount(question: String): Free[ScalazCalculation, Double] = Free.liftF(GetAmount(question))
     def convert(from: Currency, to: Currency, amount: Double): Free[ScalazCalculation, Double] =
-      ???
-    def displayValue(value: Double): Free[ScalazCalculation, Unit] = ???
+      Free.liftF(Convert(from, to, amount))
+    def displayValue(value: Double): Free[ScalazCalculation, Unit] = Free.liftF(DisplayValue(value))
   }
 }

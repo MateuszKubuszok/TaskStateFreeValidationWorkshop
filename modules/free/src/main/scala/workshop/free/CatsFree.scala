@@ -30,9 +30,9 @@ object CatsCommand {
 
   class Ops {
 
-    def getNextAction(question: String): Free[CatsCommand, ActionType] = ???
-    def configure(question: String): Free[CatsCommand, Unit] = ???
-    def quit: Free[CatsCommand, Unit] = ???
+    def getNextAction(question: String): Free[CatsCommand, ActionType] = Free.liftF(GetNextAction(question))
+    def configure(question: String): Free[CatsCommand, Unit] = Free.liftF(Configure(question))
+    def quit: Free[CatsCommand, Unit] = Free.liftF(Quit)
   }
 }
 
@@ -47,10 +47,10 @@ object CatsCalculation {
 
   class Ops {
 
-    def getCurrency(question: String): Free[CatsCalculation, Currency] = ???
-    def getAmount(question: String): Free[CatsCalculation, Double] = ???
+    def getCurrency(question: String): Free[CatsCalculation, Currency] = Free.liftF(GetCurrency(question))
+    def getAmount(question: String): Free[CatsCalculation, Double] = Free.liftF(GetAmount(question))
     def convert(from: Currency, to: Currency, amount: Double): Free[CatsCalculation, Double] =
-      ???
-    def displayValue(value: Double): Free[CatsCalculation, Unit] = ???
+      Free.liftF(Convert(from, to, amount))
+    def displayValue(value: Double): Free[CatsCalculation, Unit] = Free.liftF(DisplayValue(value))
   }
 }

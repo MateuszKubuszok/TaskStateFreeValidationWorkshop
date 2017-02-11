@@ -19,7 +19,11 @@ final class ScalazCommandIdInterpreter(
 
   import ScalazCommand._
 
-  override def apply[A](fa: ScalazCommand[A]): Id[A] = ???
+  override def apply[A](fa: ScalazCommand[A]): Id[A] = fa match {
+    case GetNextAction(question) => getNextAction(question)
+    case Configure(question)     => configStore.config = configure(question)
+    case Quit                    => quit()
+  }
 
   @tailrec
   private def getNextAction(question: String): ActionType = {
@@ -61,7 +65,12 @@ final class ScalazCalculationIdInterpreter(
 
   import ScalazCalculation._
 
-  override def apply[A](fa: ScalazCalculation[A]): Id[A] = ???
+  override def apply[A](fa: ScalazCalculation[A]): Id[A] = fa match {
+    case GetCurrency(question)     => getCurrency(question)
+    case GetAmount(question)       => getAmount(question)
+    case Convert(from, to, amount) => convert(configStore.config, from, to, amount)
+    case DisplayValue(value)       => displayValue(configStore.config, value)
+  }
 
   @tailrec
   private def getCurrency(question: String): Currency = {
