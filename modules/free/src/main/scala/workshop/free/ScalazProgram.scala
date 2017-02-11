@@ -14,7 +14,7 @@ import scalaz._
 object ScalazProgram {
 
   type Program[A] = Coproduct[ScalazCommand, ScalazCalculation, A]
-  /*
+
   val commands = new ScalazCommand.Ops[Program]
   val calculations = new ScalazCalculation.Ops[Program]
 
@@ -40,5 +40,5 @@ object ScalazProgram {
     _ <- commands.configure("Set initial configuration (amount, data source)")
     _ <- mainLoop
   } yield ()
-  */
+
 }

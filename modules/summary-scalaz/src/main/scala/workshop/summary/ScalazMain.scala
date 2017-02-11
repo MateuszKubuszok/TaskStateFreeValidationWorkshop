@@ -10,7 +10,7 @@ import workshop.validation.ScalazValidation._
 
 object ScalazMain {
 
-  // val program = ScalazProgram.program
+  val program = ScalazProgram.program
 
   val dataSources = Map[DataSource, Currency => Double](
     DataBase -> CurrencyDataBaseHandler,
@@ -38,5 +38,5 @@ object ScalazMain {
 
   val initialState = Config(2, DataBase)
 
-  def main(args: Array[String]): Unit = () // program.foldMap(interpreter).eval(initialState)
+  def main(args: Array[String]): Unit = program.foldMap(interpreter).eval(initialState)
 }

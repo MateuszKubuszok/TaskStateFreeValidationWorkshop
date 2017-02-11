@@ -9,7 +9,7 @@ import workshop.validation.CatsValidation._
 
 object CatsMain {
 
-  // val program = CatsProgram.program
+  val program = CatsProgram.program
 
   val dataSources = Map[DataSource, Currency => Double](
     DataBase -> CurrencyDataBaseHandler,
@@ -37,5 +37,5 @@ object CatsMain {
 
   val initialState = Config(2, DataBase)
 
-  def main(args: Array[String]): Unit = () // program.foldMap(interpreter).run(initialState).value
+  def main(args: Array[String]): Unit = program.foldMap(interpreter).run(initialState).value
 }
